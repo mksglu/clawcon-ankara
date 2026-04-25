@@ -7,23 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Martian+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'n-dark': '#12181F',
-                        'n-dark-alt': '#1E242C',
-                        'n-teal': '#32E6E2',
-                        'n-teal-light': '#DEFFFE',
-                        'n-teal-dark': '#014847',
-                        'n-gray': '#7E8792',
+                        'cm-bg': '#FAFAF8',
+                        'cm-text': '#2D2D2D',
+                        'cm-muted': '#888888',
+                        'cm-light': '#C8C8C8',
+                        'cm-rust': '#C17840',
+                        'cm-blue': '#4A7FD4',
+                        'cm-border': '#E8E8E8',
                     },
                     fontFamily: {
-                        'heading': ['Figtree', 'system-ui', 'sans-serif'],
-                        'body': ['Instrument Sans', 'system-ui', 'sans-serif'],
-                        'mono': ['Martian Mono', 'monospace'],
+                        'serif': ['Cormorant Garamond', 'Georgia', 'serif'],
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace'],
                     }
                 }
             }
@@ -31,7 +32,7 @@
     </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Instrument Sans', system-ui, sans-serif; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #FAFAF8; color: #2D2D2D; }
 
         .slide {
             position: fixed;
@@ -41,13 +42,14 @@
             justify-content: center;
             overflow-y: auto;
             padding: 3rem 2rem;
+            background: #FAFAF8;
         }
         .slide.active { display: flex; }
 
         .progress-bar { transition: width 0.3s ease; }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(18px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -60,20 +62,28 @@
         .animate-in > *:nth-child(6) { animation-delay: 0.40s; }
         .animate-in > *:nth-child(7) { animation-delay: 0.47s; }
         .animate-in > *:nth-child(8) { animation-delay: 0.54s; }
+        .animate-in > *:nth-child(9) { animation-delay: 0.61s; }
+        .animate-in > *:nth-child(10) { animation-delay: 0.68s; }
 
-        .card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(50, 230, 226, 0.08);
+        .stat-rust {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-style: italic;
+            color: #C17840;
         }
 
-        .teal-glow { text-shadow: 0 0 60px rgba(50, 230, 226, 0.25); }
+        .blockquote-blue {
+            border-left: 3px solid #4A7FD4;
+            padding-left: 1.25rem;
+            font-style: italic;
+            color: #666;
+        }
 
-        .stat-number {
-            background: linear-gradient(135deg, #32E6E2, #DEFFFE);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .event-cover {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 0.75rem;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
         }
 
         .speaker-notes {
@@ -84,466 +94,368 @@
             right: 0;
             max-height: 35vh;
             overflow-y: auto;
-            background: rgba(10, 12, 16, 0.97);
-            border-top: 1px solid rgba(50, 230, 226, 0.2);
+            background: rgba(45, 45, 45, 0.97);
+            border-top: 2px solid #C17840;
             padding: 1.5rem 2rem;
             z-index: 100;
-            font-family: 'Instrument Sans', system-ui, sans-serif;
         }
         .speaker-notes.visible { display: block; }
         .speaker-notes p {
-            color: rgba(222, 255, 254, 0.8);
+            color: rgba(255, 255, 255, 0.85);
             font-size: 0.95rem;
             line-height: 1.7;
             max-width: 64rem;
             margin: 0 auto;
+            font-family: 'Inter', system-ui, sans-serif;
         }
         .speaker-notes .notes-label {
-            font-family: 'Martian Mono', monospace;
-            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            color: #32E6E2;
+            color: #C17840;
             margin-bottom: 0.75rem;
         }
         .speaker-notes .pause {
-            color: rgba(50, 230, 226, 0.4);
+            color: rgba(193, 120, 64, 0.5);
             font-style: italic;
         }
 
-        .cite {
-            font-family: 'Martian Mono', monospace;
-            font-size: 0.6rem;
-            color: #7E8792;
-            letter-spacing: 0.03em;
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #999;
         }
-
-        .event-cover {
-            width: 100%;
-            max-width: 480px;
-            border-radius: 1rem;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-        .pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
     </style>
 </head>
-<body class="bg-n-dark text-white overflow-hidden h-screen">
+<body class="overflow-hidden h-screen">
 
     <!-- Progress Bar -->
-    <div class="fixed top-0 left-0 right-0 h-1 bg-n-dark-alt z-50">
-        <div id="progressBar" class="progress-bar h-full bg-gradient-to-r from-n-teal/50 via-n-teal to-n-teal-light/80" style="width: 20%"></div>
+    <div class="fixed top-0 left-0 right-0 h-[2px] bg-cm-border z-50">
+        <div id="progressBar" class="progress-bar h-full bg-cm-rust" style="width: 25%"></div>
     </div>
 
     <!-- Navigation -->
-    <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-n-dark-alt/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-white/5">
-        <button onclick="prevSlide()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-n-gray hover:text-white" aria-label="Previous slide">
+    <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-cm-border">
+        <button onclick="prevSlide()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-cm-muted hover:text-cm-text" aria-label="Previous slide">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span id="slideCounter" class="font-mono text-xs text-n-gray min-w-[3rem] text-center">1 / 5</span>
-        <button onclick="nextSlide()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-n-gray hover:text-white" aria-label="Next slide">
+        <span id="slideCounter" class="font-mono text-xs text-cm-muted min-w-[3rem] text-center">1 / 4</span>
+        <button onclick="nextSlide()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-cm-muted hover:text-cm-text" aria-label="Next slide">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <span class="text-white/10">|</span>
-        <button onclick="toggleNotes()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-n-gray hover:text-white font-mono text-[10px]" aria-label="Toggle speaker notes" title="Press S for speaker notes">
+        <span class="text-cm-border">|</span>
+        <button onclick="toggleNotes()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-cm-muted hover:text-cm-text font-mono text-[10px]" aria-label="Toggle speaker notes" title="Press S for speaker notes">
             S
         </button>
     </div>
 
     <!-- ==================== SLIDE 1: TITLE ==================== -->
     <div data-slide="0" class="slide active">
-        <div class="max-w-5xl mx-auto text-center animate-in">
+        <div class="max-w-3xl mx-auto text-center animate-in">
             <div class="mb-8">
-                <img src="https://images.lumacdn.com/event-covers/nq/acccb18a-2d71-4618-8c58-3e761c32bd1f.jpg" alt="ClawCon Ankara" class="event-cover mx-auto mb-6">
+                <img src="https://images.lumacdn.com/event-covers/nq/acccb18a-2d71-4618-8c58-3e761c32bd1f.jpg" alt="ClawCon Ankara" class="event-cover mx-auto">
             </div>
-            <div class="mb-4">
-                <span class="font-mono text-xs tracking-[0.2em] uppercase text-n-teal">ClawCon Ankara &middot; April 29, 2026</span>
-            </div>
-            <h1 class="font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl mb-5 teal-glow leading-tight">
+            <div class="section-label mb-4">ClawCon Ankara &middot; April 29, 2026</div>
+            <h1 class="font-serif font-bold text-5xl md:text-6xl lg:text-7xl mb-5 text-cm-text leading-tight">
                 The Other Half of the<br>Context Problem
             </h1>
-            <p class="text-lg md:text-xl text-n-teal-light/50 font-body mb-8 max-w-2xl mx-auto leading-relaxed">
-                On memory, measurement, and the things<br>our tools forgot to remember
+            <p class="text-base text-cm-muted font-sans mb-8 max-w-xl mx-auto leading-relaxed">
+                On memory, forgetting, and the architecture<br>beneath every AI coding tool
             </p>
-            <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
-                <span class="px-4 py-1.5 rounded-full bg-n-teal/10 border border-n-teal/20 text-n-teal text-sm font-body font-medium">B. Mert K&ouml;seo&gbreve;lu</span>
-                <span class="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-n-gray text-sm font-body">Creator of context-mode</span>
+            <div class="mb-4">
+                <span class="text-cm-text font-sans font-medium text-sm">B. Mert K&ouml;seo&gbreve;lu</span>
+                <span class="text-cm-light mx-2">&middot;</span>
+                <span class="text-cm-muted font-sans text-sm">Creator of context-mode</span>
             </div>
-            <div class="text-n-gray text-xs font-body">
-                Sponsored by <span class="text-white/70 font-medium">BuilderMare</span> &middot; Organized by <span class="text-white/70 font-medium">ClawCon</span> &amp; the <span class="text-white/70 font-medium">OpenClaw</span> community
+            <div class="text-cm-muted text-xs font-sans leading-relaxed">
+                Organized by <span class="text-cm-text/80 font-medium">BuilderMare</span> &mdash; Veli Uysal &amp; Furkan Demir
+                <br>
+                <span class="text-cm-text/80 font-medium">ClawCon</span> &amp; the <span class="text-cm-text/80 font-medium">OpenClaw</span> community
+                <br>
+                Special thanks to Murat Aslan
             </div>
         </div>
         <div class="speaker-notes" data-notes="0">
             <div class="notes-label">Speaker Notes &mdash; Slide 1</div>
             <p>
-                Good evening everyone. Before I start, a quick thank you to BuilderMare for sponsoring tonight, and to ClawCon and the OpenClaw community for bringing us all together here in Ankara.
+                Good evening everyone. Quick thank you to Veli and Furkan from BuilderMare for putting this together, to Murat Aslan for his contributions, and to ClawCon and the OpenClaw community for making this happen in Ankara.
                 <span class="pause">[pause]</span>
-                I'm Mert. I build open-source infrastructure for AI coding agents. Tonight I want to talk about a problem that most of us in this room are living with every day&mdash;but haven't named yet.
+                I'm Mert. I build open-source tools for AI coding agents. Tonight I want to talk about something that's hiding in plain sight. Every person in this room who uses an AI coding tool&mdash;Claude Code, Cursor, Copilot, Codex&mdash;you're all living with the same problem. You just might not have a name for it yet.
                 <span class="pause">[pause]</span>
-                I'm not going to show you a solution first. I'm going to show you a problem. Because a solution without the right problem is just noise.
+                I'm not going to start with a solution. I'm going to start with a question: what actually happens inside these tools when you're not looking?
             </p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 2: THE PRODUCTIVITY PARADOX ==================== -->
+    <!-- ==================== SLIDE 2: THE PROBLEM ==================== -->
     <div data-slide="1" class="slide">
-        <div class="max-w-5xl mx-auto w-full animate-in">
-            <span class="font-mono text-xs tracking-[0.2em] uppercase text-n-teal mb-3 block">Research</span>
-            <h2 class="font-heading font-extrabold text-4xl md:text-5xl mb-3">The Productivity Paradox</h2>
-            <p class="text-n-teal-light/40 font-body text-base mb-10 max-w-2xl">
-                What does the academic literature actually say about AI coding tools?
+        <div class="max-w-3xl mx-auto w-full animate-in">
+            <div class="section-label mb-3">The Problem</div>
+            <h2 class="font-serif font-bold text-4xl md:text-5xl mb-6 text-cm-text">The context window problem</h2>
+
+            <p class="text-cm-text/80 font-sans text-base leading-relaxed mb-6">
+                Here&rsquo;s the thing about Claude Code, Cursor, Copilot, Codex, Gemini CLI. Under the hood, they all work the same way. The LLM has no memory. Every single turn, the full conversation gets re-sent to the API. Every file your agent reads, every command output, every grep result. It piles up, and it all ships back to the model on every turn that follows.
             </p>
 
-            <!-- Research Cards -->
-            <div class="grid md:grid-cols-2 gap-4 mb-8">
-                <div class="card bg-n-dark-alt rounded-xl p-6 border border-white/5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="font-heading font-bold text-white text-base">METR 2025</span>
-                        <span class="cite">arXiv:2507.09089</span>
-                    </div>
-                    <p class="text-n-teal-light/60 text-sm font-body mb-4">Randomized controlled trial. 16 developers, 246 tasks, mature open-source repositories.</p>
-                    <div class="flex gap-6">
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">&minus;19%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">actual speed</div>
-                        </div>
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">+20%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">believed speed</div>
-                        </div>
-                    </div>
-                </div>
+            <p class="text-cm-text/80 font-sans text-base leading-relaxed mb-6">
+                Run <code class="font-mono text-sm bg-gray-100 px-1.5 py-0.5 rounded">gh issue list</code> once. 59 KB of JSON comes back. About 15,000 tokens. Next turn, those 15,000 tokens get sent again. Turn after that, again. Fifty turns in, that one command has cost you <strong>750,000 input tokens</strong>.
+            </p>
 
-                <div class="card bg-n-dark-alt rounded-xl p-6 border border-white/5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="font-heading font-bold text-white text-base">Faros AI 2025</span>
-                        <span class="cite">n=10,000+ developers</span>
-                    </div>
-                    <p class="text-n-teal-light/60 text-sm font-body mb-4">The verification bottleneck. More output, but at what cost?</p>
-                    <div class="flex gap-6">
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">+21%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">tasks completed</div>
-                        </div>
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">+91%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">review time</div>
-                        </div>
-                    </div>
-                </div>
+            <p class="text-cm-text/80 font-sans text-base leading-relaxed mb-6">
+                Now do that 20 times in a session. Average output per call: 30 KB. That&rsquo;s 600 KB sitting in your conversation, re-sent 50 times over. <strong>30 MB of input tokens on tool output alone.</strong>
+            </p>
 
-                <div class="card bg-n-dark-alt rounded-xl p-6 border border-white/5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="font-heading font-bold text-white text-base">DORA 2024</span>
-                        <span class="cite">dora.dev &middot; n=39,000</span>
-                    </div>
-                    <p class="text-n-teal-light/60 text-sm font-body mb-4">Google&rsquo;s annual DevOps report. The largest survey of engineering teams.</p>
-                    <div class="flex gap-6">
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">&minus;1.5%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">throughput</div>
-                        </div>
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">&minus;7.2%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">stability</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="blockquote-blue mb-8">
+                <p class="text-base">That&rsquo;s where your limit goes.</p>
+            </div>
 
-                <div class="card bg-n-dark-alt rounded-xl p-6 border border-white/5">
-                    <div class="flex items-start justify-between mb-3">
-                        <span class="font-heading font-bold text-white text-base">SonarSource 2026</span>
-                        <span class="cite">State of AI in Code</span>
-                    </div>
-                    <p class="text-n-teal-light/60 text-sm font-body mb-4">The trust gap between generation and confidence.</p>
-                    <div class="flex gap-6">
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">42%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">code is AI-generated</div>
-                        </div>
-                        <div>
-                            <div class="stat-number font-heading font-extrabold text-3xl">96%</div>
-                            <div class="text-n-gray text-xs font-body mt-1">don&rsquo;t trust it</div>
-                        </div>
-                    </div>
+            <p class="text-cm-text/70 font-sans text-base leading-relaxed mb-8">
+                Eventually the context window fills up and the agent compacts. It summarizes the conversation. Throws away the originals. The agent forgets what it read, what it decided, what it was in the middle of building. You start over. You re-explain your codebase to a model that just lost its memory.
+            </p>
+
+            <!-- Stats row -->
+            <div class="grid grid-cols-3 gap-6 border-t border-cm-border pt-6 mb-6">
+                <div class="text-center">
+                    <div class="stat-rust text-4xl font-semibold mb-1">50%</div>
+                    <div class="text-cm-muted text-xs font-sans leading-snug">accuracy drop at 32K tokens. 11 of 12 models tested.</div>
+                    <div class="text-cm-light text-[10px] font-mono mt-2">NoLiMa, 2025</div>
+                </div>
+                <div class="text-center border-l border-cm-border">
+                    <div class="stat-rust text-4xl font-semibold mb-1">15 min</div>
+                    <div class="text-cm-muted text-xs font-sans leading-snug">spent re-establishing context after each reset.</div>
+                </div>
+                <div class="text-center border-l border-cm-border">
+                    <div class="stat-rust text-4xl font-semibold mb-1">$60K</div>
+                    <div class="text-cm-muted text-xs font-sans leading-snug">/year for a 50-seat team. $100/seat/month, burned.</div>
                 </div>
             </div>
 
-            <!-- Quote -->
-            <div class="bg-n-teal/[0.04] border border-n-teal/10 rounded-xl py-4 px-6 text-center">
-                <p class="text-n-teal-light/70 font-body italic text-sm">
-                    &ldquo;Are we building tools that make us <span class="text-n-teal font-semibold not-italic">feel</span> productive, or tools that make us <span class="text-n-teal font-semibold not-italic">productive</span>?&rdquo;
-                </p>
+            <!-- Size row -->
+            <div class="grid grid-cols-4 gap-4 border-t border-cm-border pt-6">
+                <div class="text-center">
+                    <div class="stat-rust text-2xl font-semibold">56 KB</div>
+                    <div class="text-cm-muted text-[10px] font-sans mt-1">per snapshot</div>
+                    <div class="text-cm-text/70 text-xs font-sans font-medium">Playwright</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-rust text-2xl font-semibold">59 KB</div>
+                    <div class="text-cm-muted text-[10px] font-sans mt-1">per query</div>
+                    <div class="text-cm-text/70 text-xs font-sans font-medium">GitHub Issues</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-rust text-2xl font-semibold">45 KB</div>
+                    <div class="text-cm-muted text-[10px] font-sans mt-1">per analysis</div>
+                    <div class="text-cm-text/70 text-xs font-sans font-medium">Access Logs</div>
+                </div>
+                <div class="text-center">
+                    <div class="stat-rust text-2xl font-semibold">30 MB</div>
+                    <div class="text-cm-muted text-[10px] font-sans mt-1">re-sent / session</div>
+                    <div class="text-cm-text/70 text-xs font-sans font-medium">Total Cost</div>
+                </div>
             </div>
         </div>
         <div class="speaker-notes" data-notes="1">
             <div class="notes-label">Speaker Notes &mdash; Slide 2</div>
             <p>
-                So let's start with what the research actually says.
+                Here's what's actually happening underneath.
                 <span class="pause">[pause]</span>
-                METR ran a randomized controlled trial last year. Sixteen developers, two hundred forty-six tasks, real open-source repos. The result? Developers were nineteen percent slower with AI. But here's what's interesting&mdash;they believed they were twenty percent faster. There's a gap between perception and reality, and nobody's talking about it.
+                Every AI coding tool you use&mdash;Claude Code, Cursor, Copilot, Codex, Gemini CLI&mdash;works the same way. The model has no memory. Zero. Every single turn, the entire conversation gets packed up and re-sent to the API. Every file it read. Every command output. All of it, shipped back, every single turn.
                 <span class="pause">[pause]</span>
-                Faros AI found something similar at scale. Yes, more tasks got done. More PRs shipped. But review time nearly doubled. Net throughput? Flat.
+                Run one GitHub command. Fifty-nine kilobytes come back. Fifteen thousand tokens. Next turn, those tokens ship again. And again. Fifty turns in, that single command has cost you seven hundred fifty thousand input tokens.
                 <span class="pause">[pause]</span>
-                DORA&mdash;Google's annual report, thirty-nine thousand developers&mdash;found a slight decrease in both throughput and stability with AI adoption.
+                Now multiply that. Twenty tool calls in a session. Thirty kilobytes average. Six hundred kilobytes in your conversation, re-sent fifty times. Thirty megabytes of input tokens. On tool output alone.
                 <span class="pause">[pause]</span>
-                I'm not saying these tools don't work. I'm saying we don't understand why they sometimes don't. And that's a fundamentally different kind of problem.
+                Then the window fills up. The agent compacts. Summarizes, throws away the originals. Forgets what it read, what it decided, what it was building. You start over. You re-explain your entire codebase to a model that just lost its memory.
+                <span class="pause">[pause]</span>
+                Fifty percent accuracy drop after thirty-two thousand tokens. Your agent gets worse the longer it works. Fifteen minutes lost each time the context resets. Sixty thousand dollars a year, burned, for a fifty-seat team running an agent that forgets everything every twenty minutes.
             </p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 3: THE STATELESS MIND ==================== -->
+    <!-- ==================== SLIDE 3: THE SOLUTION ==================== -->
     <div data-slide="2" class="slide">
-        <div class="max-w-5xl mx-auto w-full animate-in">
-            <span class="font-mono text-xs tracking-[0.2em] uppercase text-n-teal mb-3 block">Architecture</span>
-            <h2 class="font-heading font-extrabold text-4xl md:text-5xl mb-3">The Stateless Mind</h2>
-            <p class="text-n-teal-light/40 font-body text-base mb-10 max-w-2xl">
-                Every AI coding tool works the same way underneath. The model has no memory.
+        <div class="max-w-3xl mx-auto w-full animate-in">
+            <div class="section-label mb-3">The Solution</div>
+            <h2 class="font-serif font-bold text-4xl md:text-5xl mb-6 text-cm-text">Intercept, sandbox, index</h2>
+
+            <p class="text-cm-text/80 font-sans text-base leading-relaxed mb-8">
+                context-mode is an MCP server that sits between your agent and its tools. When a tool call would dump large output into the conversation, context-mode intercepts it and runs it in a sandboxed subprocess instead. The raw data never touches context. It goes into a local FTS5 database with BM25 ranking. The agent searches it when it needs to. Only a short summary enters the conversation.
             </p>
 
-            <!-- The Problem Explained -->
-            <div class="bg-n-dark-alt rounded-xl p-6 border border-white/5 mb-6">
-                <p class="text-n-teal-light/70 font-body text-base leading-relaxed mb-6">
-                    Claude Code, Cursor, Copilot, Codex, Gemini CLI&mdash;under the hood, they all work the same way.
-                    Every single turn, the <span class="text-white font-semibold">full conversation</span> gets re-sent to the API.
-                    Every file your agent reads, every command output, every grep result.
-                    It piles up, and it all ships back on <span class="text-white font-semibold">every turn</span> that follows.
-                </p>
-
-                <!-- The Cascade -->
-                <div class="flex items-center justify-center gap-2 mb-6 flex-wrap font-mono text-sm">
-                    <span class="px-4 py-2 rounded-full bg-n-teal text-n-dark font-bold">1 command</span>
-                    <span class="text-n-teal">&rarr;</span>
-                    <span class="px-4 py-2 rounded-full bg-n-teal/80 text-n-dark font-bold">59 KB</span>
-                    <span class="text-n-teal">&rarr;</span>
-                    <span class="px-4 py-2 rounded-full bg-n-teal/60 text-n-dark font-bold">15K tokens</span>
-                    <span class="text-n-teal">&rarr;</span>
-                    <span class="px-4 py-2 rounded-full bg-n-teal/40 text-n-dark font-bold">&times; 50 turns</span>
-                    <span class="text-n-teal">&rarr;</span>
-                    <span class="px-4 py-2 rounded-full bg-red-500/20 text-red-300 font-bold border border-red-500/30">750K tokens</span>
+            <!-- 5 Hooks -->
+            <div class="space-y-3 mb-8">
+                <div class="flex items-start gap-4 py-3 border-b border-cm-border">
+                    <span class="stat-rust text-lg font-semibold w-8 shrink-0">01</span>
+                    <div>
+                        <span class="font-sans font-semibold text-sm text-cm-text">PreToolUse</span>
+                        <span class="text-cm-muted text-sm font-sans ml-3">Route tool calls. Block curl/wget, redirect large output to sandbox.</span>
+                    </div>
                 </div>
-
-                <p class="text-n-teal-light/50 font-body text-sm leading-relaxed text-center">
-                    Eventually the context fills up. The agent compacts&mdash;summarizes the conversation, throws away the originals.<br>
-                    It forgets what it read, what it decided, what it was building. <span class="text-white/70">You start over.</span>
-                </p>
-            </div>
-
-            <!-- Stats Row -->
-            <div class="grid grid-cols-3 gap-4">
-                <div class="bg-n-dark-alt rounded-xl p-5 border border-white/5 text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl mb-1">50%</div>
-                    <div class="text-n-gray text-xs font-body">accuracy drop at 32K tokens</div>
-                    <div class="cite mt-2">NoLiMa, 2025 &middot; 12 models</div>
+                <div class="flex items-start gap-4 py-3 border-b border-cm-border">
+                    <span class="stat-rust text-lg font-semibold w-8 shrink-0">02</span>
+                    <div>
+                        <span class="font-sans font-semibold text-sm text-cm-text">PostToolUse</span>
+                        <span class="text-cm-muted text-sm font-sans ml-3">Capture events. File ops, git, errors, decisions &rarr; SessionDB.</span>
+                    </div>
                 </div>
-                <div class="bg-n-dark-alt rounded-xl p-5 border border-white/5 text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl mb-1">15m</div>
-                    <div class="text-n-gray text-xs font-body">re-establishing context<br>after each reset</div>
+                <div class="flex items-start gap-4 py-3 border-b border-cm-border">
+                    <span class="stat-rust text-lg font-semibold w-8 shrink-0">03</span>
+                    <div>
+                        <span class="font-sans font-semibold text-sm text-cm-text">SessionStart</span>
+                        <span class="text-cm-muted text-sm font-sans ml-3">Restore state. Inject resume snapshot, reload indexed knowledge.</span>
+                    </div>
                 </div>
-                <div class="bg-n-dark-alt rounded-xl p-5 border border-white/5 text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl mb-1">30MB</div>
-                    <div class="text-n-gray text-xs font-body">re-sent per session<br>on tool output alone</div>
+                <div class="flex items-start gap-4 py-3 border-b border-cm-border">
+                    <span class="stat-rust text-lg font-semibold w-8 shrink-0">04</span>
+                    <div>
+                        <span class="font-sans font-semibold text-sm text-cm-text">PreCompact</span>
+                        <span class="text-cm-muted text-sm font-sans ml-3">Preserve state. Build snapshot before context wipe.</span>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 py-3 border-b border-cm-border">
+                    <span class="stat-rust text-lg font-semibold w-8 shrink-0">05</span>
+                    <div>
+                        <span class="font-sans font-semibold text-sm text-cm-text">UserPromptSubmit</span>
+                        <span class="text-cm-muted text-sm font-sans ml-3">Capture intent. Track decisions, corrections, session mode.</span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Quote -->
-            <div class="mt-6 text-center">
-                <p class="text-n-teal-light/50 font-body italic text-sm">
-                    &ldquo;We gave our tools intelligence, but not <span class="text-n-teal font-semibold not-italic">memory</span>.&rdquo;
-                </p>
+            <!-- Measured results -->
+            <div class="section-label mb-3">Measured, not estimated</div>
+            <div class="grid grid-cols-3 gap-6 border-t border-cm-border pt-5">
+                <div class="text-center">
+                    <div class="stat-rust text-3xl font-semibold mb-1">99.5%</div>
+                    <div class="text-cm-muted text-xs font-sans">Playwright</div>
+                    <div class="text-cm-text/60 text-[10px] font-mono mt-1">56.2 KB &rarr; 299 B</div>
+                </div>
+                <div class="text-center border-l border-cm-border">
+                    <div class="stat-rust text-3xl font-semibold mb-1">98%</div>
+                    <div class="text-cm-muted text-xs font-sans">GitHub Issues</div>
+                    <div class="text-cm-text/60 text-[10px] font-mono mt-1">58.9 KB &rarr; 1.1 KB</div>
+                </div>
+                <div class="text-center border-l border-cm-border">
+                    <div class="stat-rust text-3xl font-semibold mb-1">98%</div>
+                    <div class="text-cm-muted text-xs font-sans">Full Session</div>
+                    <div class="text-cm-text/60 text-[10px] font-mono mt-1">315 KB &rarr; 5.4 KB</div>
+                </div>
             </div>
         </div>
         <div class="speaker-notes" data-notes="2">
             <div class="notes-label">Speaker Notes &mdash; Slide 3</div>
             <p>
-                Here's what I think is actually happening underneath all those numbers.
+                So what's the answer?
                 <span class="pause">[pause]</span>
-                Every AI coding tool you use&mdash;Claude Code, Cursor, Copilot, Codex&mdash;works the same way. The model has no memory. None. Every single turn, the entire conversation gets packed up and re-sent to the API. Every file it read. Every command output. All of it. Shipped back, every turn.
+                context-mode is an MCP server. It sits between your agent and its tools. When a tool call would dump fifty-nine kilobytes into your conversation, context-mode intercepts it. Runs it in a sandbox. Indexes the output into a local FTS5 database with BM25 ranking. The agent searches it when it needs to. Only a short summary enters the conversation.
                 <span class="pause">[pause]</span>
-                Run one GitHub command. Fifty-nine kilobytes come back. Fifteen thousand tokens. Next turn, those tokens ship again. And again. Fifty turns in, that single command has cost you seven hundred fifty thousand input tokens.
+                Five lifecycle hooks. PreToolUse routes and blocks dangerous calls. PostToolUse captures events&mdash;every file operation, every git command, every error, every decision goes into a local database. SessionStart restores state when you open a new session. PreCompact preserves everything right before a context wipe. And PromptSubmit tracks your intent.
                 <span class="pause">[pause]</span>
-                Eventually the window fills up. The agent compacts&mdash;it summarizes the conversation and throws away the originals. And just like that, it forgets what it read, what it decided, what it was in the middle of building. You start over. You re-explain your codebase to a model that just lost its mind.
-                <span class="pause">[pause]</span>
-                Research shows a fifty percent accuracy drop after thirty-two thousand tokens. Your agent literally gets worse at its job the longer it works. That's not a feature. That's architectural amnesia.
+                The results are measured, not estimated. Playwright snapshots go from fifty-six kilobytes to two hundred ninety-nine bytes. That's ninety-nine point five percent. A full session goes from three hundred fifteen kilobytes to five point four. Same work. Same answers. Thirty times fewer tokens.
             </p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 4: THE BLIND SPOT ==================== -->
+    <!-- ==================== SLIDE 4: CLOSE ==================== -->
     <div data-slide="3" class="slide">
-        <div class="max-w-5xl mx-auto w-full animate-in">
-            <span class="font-mono text-xs tracking-[0.2em] uppercase text-n-teal mb-3 block">Observability</span>
-            <h2 class="font-heading font-extrabold text-4xl md:text-5xl mb-3">The Blind Spot</h2>
-            <p class="text-n-teal-light/40 font-body text-base mb-10 max-w-2xl">
-                Vendors measure everything. Customers see nothing.
-            </p>
-
-            <!-- Two Column Comparison -->
-            <div class="grid md:grid-cols-2 gap-4 mb-8">
-                <!-- What Vendors See -->
-                <div class="bg-n-dark-alt rounded-xl p-6 border border-white/5">
-                    <div class="font-mono text-[10px] uppercase tracking-[0.15em] text-n-teal mb-4">What vendors measure internally</div>
-                    <div class="space-y-2.5">
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-n-teal"></div>
-                            <span class="text-n-teal-light/70 text-sm font-body">63 &times; analytics events per session</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-n-teal"></div>
-                            <span class="text-n-teal-light/70 text-sm font-body">Total cost per session (USD)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-n-teal"></div>
-                            <span class="text-n-teal-light/70 text-sm font-body">Token counts (input / output / cache)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-n-teal"></div>
-                            <span class="text-n-teal-light/70 text-sm font-body">Model routing decisions</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-n-teal"></div>
-                            <span class="text-n-teal-light/70 text-sm font-body">Tool invocation patterns</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-n-teal"></div>
-                            <span class="text-n-teal-light/70 text-sm font-body">Session duration &amp; outcomes</span>
-                        </div>
-                    </div>
-                    <div class="cite mt-4">Source: Anthropic bridge/replBridge.ts, cli/print.ts</div>
-                </div>
-
-                <!-- What Customers See -->
-                <div class="bg-n-dark-alt rounded-xl p-6 border border-red-500/10 relative overflow-hidden">
-                    <div class="font-mono text-[10px] uppercase tracking-[0.15em] text-red-400/80 mb-4">What customers see</div>
-                    <div class="flex items-center justify-center h-40">
-                        <span class="font-heading font-extrabold text-6xl text-white/10">nothing</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Cost Stats -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-n-dark-alt rounded-xl p-5 border border-white/5 text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl mb-1">$42K</div>
-                    <div class="text-n-gray text-xs font-body">avg. monthly spend<br>50-seat engineering org</div>
-                </div>
-                <div class="bg-n-dark-alt rounded-xl p-5 border border-white/5 text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl mb-1">80%</div>
-                    <div class="text-n-gray text-xs font-body">of teams with<br>zero usage metrics</div>
-                </div>
-            </div>
-
-            <div class="bg-n-teal/[0.04] border border-n-teal/10 rounded-xl py-4 px-6 text-center">
-                <p class="text-n-teal-light/70 font-body italic text-sm">
-                    &ldquo;We can&rsquo;t fix what we can&rsquo;t see. We can&rsquo;t improve what we can&rsquo;t <span class="text-n-teal font-semibold not-italic">measure</span>.&rdquo;
-                </p>
-            </div>
-        </div>
-        <div class="speaker-notes" data-notes="3">
-            <div class="notes-label">Speaker Notes &mdash; Slide 4</div>
-            <p>
-                And here's the part that really gets me.
-                <span class="pause">[pause]</span>
-                Engineering teams spend forty-two thousand dollars a month on these tools. Eighty percent have zero usage metrics. Zero.
-                <span class="pause">[pause]</span>
-                Anthropic tracks sixty-three internal analytics events inside Claude Code. Session costs, token counts, model routing, tool patterns. All of it. What do customers see? Nothing. That column on the right? That's what you get for your hundred dollars a month per seat.
-                <span class="pause">[pause]</span>
-                We're flying blind. The productivity paradox isn't just about the tools being broken. It's about our complete inability to observe them. You can't debug what you can't see. You can't optimize what you can't measure. And right now, nobody can see anything.
-            </p>
-        </div>
-    </div>
-
-    <!-- ==================== SLIDE 5: THE ANSWER ==================== -->
-    <div data-slide="4" class="slide">
-        <div class="max-w-4xl mx-auto text-center animate-in">
-            <div class="mb-6">
-                <span class="font-mono text-xs tracking-[0.2em] uppercase text-n-teal pulse-slow">Everything I just described&mdash;this is why</span>
-            </div>
-            <h2 class="font-heading font-extrabold text-6xl md:text-7xl lg:text-8xl mb-4 teal-glow">
+        <div class="max-w-3xl mx-auto text-center animate-in">
+            <div class="section-label mb-6">Open Source</div>
+            <h2 class="font-serif italic text-6xl md:text-7xl lg:text-8xl mb-4 text-cm-text" style="font-family: 'Cormorant Garamond', Georgia, serif;">
                 context-mode
             </h2>
-            <p class="text-xl text-n-teal-light/50 font-body mb-10 max-w-xl mx-auto leading-relaxed">
-                Intercept. Sandbox. Index.<br>
-                <span class="text-n-teal-light/30 text-base">Give the agent memory instead of disposable conversation.</span>
+            <p class="text-cm-muted font-sans text-base mb-10 max-w-xl mx-auto leading-relaxed">
+                The other half of the context problem.
             </p>
 
             <!-- Stats -->
             <div class="flex flex-wrap items-center justify-center gap-8 mb-10">
                 <div class="text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl">56K+</div>
-                    <div class="text-n-gray text-xs font-body mt-1">installs</div>
+                    <div class="stat-rust text-4xl font-semibold">95K+</div>
+                    <div class="text-cm-muted text-xs font-sans mt-1">users</div>
                 </div>
-                <div class="text-white/10 text-2xl">&middot;</div>
+                <div class="text-cm-light text-xl">&middot;</div>
                 <div class="text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl">6.5K</div>
-                    <div class="text-n-gray text-xs font-body mt-1">GitHub stars</div>
+                    <div class="stat-rust text-4xl font-semibold">79.1K</div>
+                    <div class="text-cm-muted text-xs font-sans mt-1">npm</div>
                 </div>
-                <div class="text-white/10 text-2xl">&middot;</div>
+                <div class="text-cm-light text-xl">&middot;</div>
                 <div class="text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl">14</div>
-                    <div class="text-n-gray text-xs font-body mt-1">platform adapters</div>
+                    <div class="stat-rust text-4xl font-semibold">15.9K+</div>
+                    <div class="text-cm-muted text-xs font-sans mt-1">marketplace</div>
                 </div>
-                <div class="text-white/10 text-2xl">&middot;</div>
+                <div class="text-cm-light text-xl">&middot;</div>
                 <div class="text-center">
-                    <div class="stat-number font-heading font-extrabold text-4xl">98%</div>
-                    <div class="text-n-gray text-xs font-body mt-1">context saved</div>
+                    <div class="stat-rust text-4xl font-semibold">14</div>
+                    <div class="text-cm-muted text-xs font-sans mt-1">platforms</div>
+                </div>
+                <div class="text-cm-light text-xl">&middot;</div>
+                <div class="text-center">
+                    <div class="stat-rust text-4xl font-semibold">10.1K</div>
+                    <div class="text-cm-muted text-xs font-sans mt-1">GitHub stars</div>
                 </div>
             </div>
 
-            <!-- Platforms including OpenClaw -->
-            <div class="flex flex-wrap items-center justify-center gap-2 mb-10">
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">Claude Code</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">Codex CLI</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">Cursor</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">Gemini CLI</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/20 border border-n-teal/40 text-n-teal text-xs font-mono font-semibold">OpenClaw</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">Kiro</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">Cline</span>
-                <span class="px-3 py-1 rounded-full bg-n-teal/[0.08] border border-n-teal/[0.15] text-n-teal-light text-xs font-mono">+7 more</span>
+            <!-- Platforms -->
+            <div class="flex flex-wrap items-center justify-center gap-2 mb-8">
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">Claude Code</span>
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">Codex CLI</span>
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">Cursor</span>
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">Gemini CLI</span>
+                <span class="px-3 py-1 rounded-full border-2 border-cm-rust text-cm-rust text-xs font-mono font-medium">OpenClaw</span>
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">Kiro</span>
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">Cline</span>
+                <span class="px-3 py-1 rounded-full border border-cm-border text-cm-text/70 text-xs font-mono">+7 more</span>
             </div>
 
-            <!-- CTA -->
-            <div class="mb-10">
-                <span class="font-mono text-lg text-n-teal font-semibold">context-mode.com</span>
-            </div>
-
-            <!-- Closing -->
-            <div class="text-n-teal-light/30 text-sm font-body mb-4">
-                Open source &middot; Elastic-2.0
-            </div>
-
-            <p class="text-n-teal-light/50 font-body text-base max-w-lg mx-auto leading-relaxed mb-6">
-                The answer was always open source.<br>
-                Thank you.
+            <!-- Used by -->
+            <div class="section-label mb-3">Used across teams at</div>
+            <p class="text-cm-muted text-xs font-sans mb-10 max-w-lg mx-auto leading-relaxed">
+                Microsoft &middot; Google &middot; Meta &middot; ByteDance &middot; Red Hat &middot; GitHub &middot; Stripe &middot; Datadog &middot; IBM &middot; NVIDIA &middot; Supabase &middot; Amazon &middot; Canva &middot; Notion &middot; Salesforce
             </p>
 
-            <div class="flex items-center justify-center gap-6 text-n-gray text-sm font-body">
-                <a href="https://mksg.lu" target="_blank" class="hover:text-n-teal transition-colors">mksg.lu</a>
-                <span class="text-white/10">&middot;</span>
-                <a href="https://github.com/mksglu" target="_blank" class="hover:text-n-teal transition-colors">github.com/mksglu</a>
-                <span class="text-white/10">&middot;</span>
-                <a href="https://context-mode.com" target="_blank" class="hover:text-n-teal transition-colors">context-mode.com</a>
+            <!-- CTA -->
+            <div class="mb-3">
+                <a href="https://context-mode.com" target="_blank" class="inline-block bg-cm-blue text-white font-sans font-medium text-sm px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity">
+                    Get Started &rarr;
+                </a>
+                <a href="https://github.com/mksglu/context-mode" target="_blank" class="inline-block border border-cm-border text-cm-text font-sans font-medium text-sm px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors ml-2">
+                    View Source
+                </a>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 text-cm-muted text-[10px] font-mono mb-8 mt-6">
+                <span class="border border-cm-border rounded px-2 py-0.5">ELv2</span>
+                <span class="border border-cm-border rounded px-2 py-0.5">HN #1 &middot; 570+ pts</span>
+            </div>
+
+            <div class="border-t border-cm-border pt-6">
+                <p class="text-cm-muted font-sans text-sm mb-4">
+                    Thank you.
+                </p>
+                <div class="flex items-center justify-center gap-4 text-cm-muted text-xs font-sans">
+                    <a href="https://mksg.lu" target="_blank" class="hover:text-cm-blue transition-colors">mksg.lu</a>
+                    <span class="text-cm-light">&middot;</span>
+                    <a href="https://github.com/mksglu" target="_blank" class="hover:text-cm-blue transition-colors">github.com/mksglu</a>
+                    <span class="text-cm-light">&middot;</span>
+                    <a href="https://context-mode.com" target="_blank" class="hover:text-cm-blue transition-colors">context-mode.com</a>
+                </div>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="4">
-            <div class="notes-label">Speaker Notes &mdash; Slide 5</div>
+        <div class="speaker-notes" data-notes="3">
+            <div class="notes-label">Speaker Notes &mdash; Slide 4</div>
             <p>
-                Everything I just described&mdash;the context degradation, the amnesia, the measurement gap.
-                <span class="pause">[pause, let it land]</span>
-                That's why I built context-mode.
+                <span class="pause">[pause, let the previous slide land]</span>
+                context-mode. The other half of the context problem. Open source. Always has been.
                 <span class="pause">[pause]</span>
-                It intercepts tool output before it floods the context window. Indexes it locally into a searchable database. Gives the agent memory instead of disposable conversation. And it captures every session, every tool call, every outcome&mdash;so you can finally see what's happening inside your AI workflows.
+                Ninety-five thousand users. Seventy-nine thousand npm downloads. Nearly sixteen thousand marketplace installs. Fourteen platform adapters&mdash;including a native OpenClaw adapter, which feels right to mention here tonight.
                 <span class="pause">[pause]</span>
-                Fifty-six thousand installs. Six and a half thousand GitHub stars. Fourteen platform adapters&mdash;including a native OpenClaw adapter, which feels right to mention in a room full of people who care about personal AI sovereignty.
+                Used across teams at Microsoft, Google, Meta, Amazon, Stripe, Supabase, and many more. Ten thousand GitHub stars in three months.
                 <span class="pause">[pause]</span>
-                It's open source. It always has been. Because I believe the answer to the problems I just showed you can only come from the community, not from vendors.
+                It's open source because I believe the answer to the problem I just showed you can only come from the community, not from vendors.
                 <span class="pause">[pause]</span>
-                Thank you. context-mode.com if you want to try it tonight. And thank you again to BuilderMare and ClawCon for making this evening possible.
+                context-mode.com if you want to try it tonight. Thank you again to Veli, Furkan, Murat, and to ClawCon for making this evening possible.
             </p>
         </div>
     </div>
@@ -551,7 +463,7 @@
     <!-- ==================== NAVIGATION JS ==================== -->
     <script>
         let current = 0;
-        const total = 5;
+        const total = 4;
         let notesVisible = false;
 
         function showSlide(n) {
@@ -559,7 +471,6 @@
             const slide = document.querySelector(`[data-slide="${n}"]`);
             slide.classList.add('active');
 
-            // Re-trigger animations
             const container = slide.querySelector('.animate-in');
             if (container) {
                 container.classList.remove('animate-in');
@@ -569,15 +480,11 @@
 
             document.getElementById('slideCounter').textContent = `${n + 1} / ${total}`;
             document.getElementById('progressBar').style.width = `${((n + 1) / total) * 100}%`;
-
-            // Update speaker notes
             updateNotes(n);
         }
 
         function updateNotes(n) {
-            document.querySelectorAll('.speaker-notes').forEach(note => {
-                note.classList.remove('visible');
-            });
+            document.querySelectorAll('.speaker-notes').forEach(note => note.classList.remove('visible'));
             if (notesVisible) {
                 const note = document.querySelector(`[data-notes="${n}"]`);
                 if (note) note.classList.add('visible');
@@ -600,7 +507,6 @@
             if (e.key === 's' || e.key === 'S') { e.preventDefault(); toggleNotes(); }
         });
 
-        // Touch / swipe support
         let touchStartX = 0;
         document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
         document.addEventListener('touchend', (e) => {
