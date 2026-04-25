@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -17,14 +17,14 @@
                         'cm-text': '#2D2D2D',
                         'cm-muted': '#888888',
                         'cm-light': '#C8C8C8',
-                        'cm-rust': '#C17840',
+                        'cm-rust': '#B45309',
                         'cm-blue': '#4A7FD4',
                         'cm-border': '#E8E8E8',
                     },
                     fontFamily: {
-                        'serif': ['Cormorant Garamond', 'Georgia', 'serif'],
-                        'sans': ['Inter', 'system-ui', 'sans-serif'],
-                        'mono': ['JetBrains Mono', 'monospace'],
+                        'serif': ['Instrument Serif', 'Georgia', 'serif'],
+                        'sans': ['IBM Plex Sans', '-apple-system', 'sans-serif'],
+                        'mono': ['IBM Plex Mono', 'SF Mono', 'monospace'],
                     }
                 }
             }
@@ -32,7 +32,7 @@
     </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', system-ui, sans-serif; background: #FAFAF8; color: #2D2D2D; }
+        body { font-family: 'IBM Plex Sans', -apple-system, sans-serif; background: #FAFAF8; color: #2D2D2D; }
 
         .slide {
             position: fixed;
@@ -66,9 +66,9 @@
         .animate-in > *:nth-child(10) { animation-delay: 0.68s; }
 
         .stat-rust {
-            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-family: 'Instrument Serif', Georgia, serif;
             font-style: italic;
-            color: #C17840;
+            color: #B45309;
         }
 
         .blockquote-blue {
@@ -95,7 +95,7 @@
             max-height: 35vh;
             overflow-y: auto;
             background: rgba(45, 45, 45, 0.97);
-            border-top: 2px solid #C17840;
+            border-top: 2px solid #B45309;
             padding: 1.5rem 2rem;
             z-index: 100;
         }
@@ -106,23 +106,23 @@
             line-height: 1.7;
             max-width: 64rem;
             margin: 0 auto;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
         }
         .speaker-notes .notes-label {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'IBM Plex Mono', 'SF Mono', monospace;
             font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            color: #C17840;
+            color: #B45309;
             margin-bottom: 0.75rem;
         }
         .speaker-notes .pause {
-            color: rgba(193, 120, 64, 0.5);
+            color: rgba(180, 83, 9, 0.5);
             font-style: italic;
         }
 
         .section-label {
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'IBM Plex Mono', 'SF Mono', monospace;
             font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.2em;
@@ -362,7 +362,7 @@
     <div data-slide="3" class="slide">
         <div class="max-w-3xl mx-auto text-center animate-in">
             <div class="section-label mb-6">Open Source</div>
-            <h2 class="font-serif italic text-6xl md:text-7xl lg:text-8xl mb-4 text-cm-text" style="font-family: 'Cormorant Garamond', Georgia, serif;">
+            <h2 class="font-serif italic text-6xl md:text-7xl lg:text-8xl mb-4 text-cm-text">
                 context-mode
             </h2>
             <p class="text-cm-muted font-sans text-base mb-10 max-w-xl mx-auto leading-relaxed">
@@ -415,19 +415,13 @@
                 Microsoft &middot; Google &middot; Meta &middot; ByteDance &middot; Red Hat &middot; GitHub &middot; Stripe &middot; Datadog &middot; IBM &middot; NVIDIA &middot; Supabase &middot; Amazon &middot; Canva &middot; Notion &middot; Salesforce
             </p>
 
-            <!-- CTA -->
-            <div class="mb-3">
-                <a href="https://context-mode.com" target="_blank" class="inline-block bg-cm-blue text-white font-sans font-medium text-sm px-6 py-2.5 rounded-full hover:opacity-90 transition-opacity">
-                    Get Started &rarr;
-                </a>
-                <a href="https://github.com/mksglu/context-mode" target="_blank" class="inline-block border border-cm-border text-cm-text font-sans font-medium text-sm px-6 py-2.5 rounded-full hover:bg-gray-50 transition-colors ml-2">
-                    View Source
-                </a>
-            </div>
-
-            <div class="flex items-center justify-center gap-3 text-cm-muted text-[10px] font-mono mb-8 mt-6">
-                <span class="border border-cm-border rounded px-2 py-0.5">ELv2</span>
-                <span class="border border-cm-border rounded px-2 py-0.5">HN #1 &middot; 570+ pts</span>
+            <!-- Info -->
+            <div class="flex items-center justify-center gap-3 text-cm-muted text-xs font-mono mb-8">
+                <span>context-mode.com</span>
+                <span class="text-cm-light">&middot;</span>
+                <span>Open source &middot; ELv2</span>
+                <span class="text-cm-light">&middot;</span>
+                <span>HN #1 &middot; 570+ pts</span>
             </div>
 
             <div class="border-t border-cm-border pt-6">
