@@ -65,23 +65,7 @@ That's where your context is going. And yeah, that's where your money is going t
 
 ---
 
-## Slide 5 — I traced it in the source code
-
-I didn't just observe this pattern. I went and read Claude Code's source.
-
-There's an array called `mutableMessages`. It holds everything. Your messages, the model's responses, every tool result. This array gets sent to the Anthropic API on every single turn. The whole thing.
-
-There's a function called `truncate_function_output_payload` that tries to shorten big outputs. But here's the thing, it shortens them. It never removes them. They stay in the array until compaction runs.
-
-And the prompt cache has a five-minute TTL. So if you step away for ten minutes and come back, the cache is cold. Your entire `mutableMessages` array gets re-sent at full price. No cache discount.
-
-I wrote a blog post about this, traced every relevant line number. `print.ts` line 2965, that's where the array ships. `ccrClient.ts` line 623, that's where the rate limit hits.
-
-But the number that really gets me. Say you set your context window to 200K tokens. Sounds like plenty. But if tool output has already eaten 150K of that, you've got 50K left. For reasoning. For actual thinking. The tool output ate your thinking space. The agent is making decisions in a tiny corner of its own window.
-
----
-
-## Slide 6 — When the context fills up, everything disappears
+## Slide 5 — When the context fills up, everything disappears
 
 So the context fills up. What happens next?
 
@@ -95,7 +79,7 @@ For a fifty-person team at a hundred bucks per seat per month, that adds up to s
 
 ---
 
-## Slide 7 — What if the data never entered context?
+## Slide 6 — What if the data never entered context?
 
 *(two seconds of silence)*
 
@@ -105,7 +89,7 @@ Not better compression. Not smarter summarization. Not a bigger window. What if 
 
 ---
 
-## Slide 8 — Intercept
+## Slide 7 — Intercept
 
 context-mode intercepts it.
 
@@ -123,7 +107,7 @@ Now, how does one plugin work on fourteen different platforms? Three mechanisms.
 
 ---
 
-## Slide 9 — Sandbox (Think in Code)
+## Slide 8 — Sandbox (Think in Code)
 
 Sandbox. This took the longest to get right.
 
@@ -143,7 +127,7 @@ Your CPU does the work for free. Tokens cost money.
 
 ---
 
-## Slide 10 — Index (Session persistence)
+## Slide 9 — Index (Session persistence)
 
 Index.
 
@@ -163,7 +147,7 @@ You stop explaining your codebase from scratch. The agent already knows. It just
 
 ---
 
-## Slide 11 — Measured results
+## Slide 10 — Measured results
 
 Numbers.
 
@@ -179,7 +163,7 @@ Full session, fifty turns. Thirty megabytes re-sent drops to one. On top of that
 
 ---
 
-## Slide 12 — Close
+## Slide 11 — Close
 
 context-mode. Open source. Elastic License 2.0.
 
