@@ -7,218 +7,172 @@
 
 ## Slide 1 — Title
 
-> Good evening everyone.
+Good evening.
 
-Quick thank you to Veli and Furkan from BuilderMare, to Murat Aslan, and to ClawCon and the OpenClaw community for making this happen in Ankara.
+Thank you Veli and Furkan from BuilderMare for putting this together. Murat Aslan, ClawCon, OpenClaw community. Ankara is a good city for this conversation.
 
-*(pause)*
-
-I'm Mert. I build context-mode — an open-source MCP server for AI coding agents. Tonight I want to talk about a problem that costs real money and real time, and that every single person in this room is living with right now. You just might not have a name for it yet.
+I'm Mert. I make context-mode, an open-source MCP server. Tonight I want to talk about something that's been bothering me for a while, and I think it bothers you too. You just haven't put a name on it yet.
 
 ---
 
 ## Slide 2 — Your AI agent has no memory
 
-Let's start with a fact that might surprise you.
+So here's the thing.
 
-*(pause)*
+Your AI coding agent doesn't remember anything. I know it feels like it does. But it doesn't. Claude Code, Cursor, Copilot, Codex, Gemini CLI. Pick your favorite. Under the hood, same story. The LLM is stateless. Zero memory between API calls.
 
-Your AI coding agent has no memory. None. Claude Code, Cursor, Copilot, Codex, Gemini CLI — under the hood, they all work exactly the same way. The LLM is stateless. There is no persistent state between API calls. It doesn't remember anything from one turn to the next.
+What looks like memory is actually re-transmission. Every turn, the entire conversation, every message you sent, every tool result that came back, every file the agent read, all of it gets serialized and shipped to the API again. From scratch. That's the "memory."
 
-So how does it seem like it remembers? It doesn't. Every single turn, the full conversation — every message, every tool result, every file it read — gets serialized and re-sent to the API from scratch. The illusion of memory is just re-transmission.
-
-Let me show you what that actually looks like.
+Let me show you what that looks like in practice.
 
 ---
 
 ## Slide 3 — Every turn, everything gets re-sent
 
-Here's what actually happens under the hood.
+Here's what's really happening.
 
-*(pause)*
+Turn one. You ask something. A tool runs. Sixty kilobytes come back. Fine. No problem.
 
-Turn one — you ask something, a tool runs, sixty kilobytes come back. That's fine. Fits in context easily.
+Turn five. Now the API call includes everything from turns one through four. Plus the new stuff. Three hundred kilobytes. You're paying for those first four turns again.
 
-Turn five — the API call now includes all the output from turns one through four, plus the new stuff. Three hundred kilobytes of input tokens. You're paying for turns one through four again.
+Turn fifteen. Same deal. Six hundred kilobytes. Every tool result from every previous turn is still in that payload.
 
-Turn fifteen — everything ships again. Six hundred kilobytes. Every tool result from every previous turn is in that payload.
+Turn thirty. 1.2 megabytes. One point two megabytes sent to the API on a single turn. Think about that for a second.
 
-Turn thirty — you're at 1.2 megabytes. The context window is almost full. Think about that — 1.2 megabytes of input tokens sent to the API on a single turn.
+Turn thirty-one. Context window is full. The agent panics. It uses the model to summarize the conversation, compress it down, then it throws away the originals. Everything the agent read, every decision it made, every error it worked through, the thing it was building. Gone. Replaced by a lossy summary.
 
-*(pause)*
-
-Turn thirty-one? The context window hits its limit. The agent compacts. It uses the model itself to summarize the conversation into a shorter form, then throws away the originals. And just like that — every file it read, every decision it made, every error it encountered and fixed, the task it was in the middle of — gone. Replaced by a lossy summary.
-
-You start over.
+And you start explaining your codebase again from scratch.
 
 ---
 
 ## Slide 4 — One command. 750,000 tokens.
 
-Let me make this concrete with a real example.
+Let me put a real number on this.
 
-*(pause)*
+You run `gh issue list`. One command. Fifty-nine kilobytes of JSON comes back from GitHub. About fifteen thousand tokens. That seems fine.
 
-You run `gh issue list`. One command. GitHub returns fifty-nine kilobytes of JSON. That's about fifteen thousand tokens. Seems reasonable, right?
+But nobody talks about what happens next. Those fifteen thousand tokens are now part of the conversation history. Next turn, they ship again. Turn after that, again. The agent isn't even looking at that data anymore. It already processed it. Gave you the answer. But the protocol requires full conversation on every API call. So it keeps shipping.
 
-*(pause)*
+Fifty turns in. That one command has cost you 750,000 input tokens.
 
-But here's the thing nobody talks about. Next turn, those fifteen thousand tokens ship again as part of the conversation history. Turn after that — again. Turn after that — again. The agent isn't using that data anymore. It already processed it. But the protocol requires the full conversation on every API call.
+One command. 750,000 tokens. Because the output sat in conversation history getting re-sent over and over.
 
-Fifty turns in, that single command has cost you **seven hundred fifty thousand input tokens**. One command. Seven hundred fifty thousand tokens. Just because the output sat in the conversation history and got re-sent on every subsequent turn.
+And nobody runs just one command per session. You're running twenty, thirty, sometimes fifty tool calls. Average output around thirty kilobytes each.
 
-*(pause)*
+That's thirty megabytes of input tokens. Per session. Just tool output. Not your prompts. Not the model's replies. Just raw output from tools the agent already processed and will never look at again.
 
-And you're not running one command per session. You're running twenty, thirty, sometimes fifty tool calls. Average output per call: about thirty kilobytes each.
-
-That's thirty megabytes of input tokens per session. On tool output alone. Not your prompts. Not the model's responses. Just the raw output from tools that the agent already processed and will never look at again.
-
-That's where your context goes. That's where your money goes.
+That's where your context is going. And yeah, that's where your money is going too.
 
 ---
 
 ## Slide 5 — When the context fills up, everything disappears
 
-And when it fills up, everything disappears.
+So the context fills up. What happens?
 
-*(pause)*
+The agent compacts. Summarizes the conversation. But summarization is lossy. The NoLiMa benchmark from 2025 tested twelve models. Found fifty percent accuracy drop past thirty-two thousand tokens. The model is already making worse decisions before it even compacts. Just from the noise.
 
-The agent compacts. It uses the model to summarize the conversation into a compressed form. But summarization is lossy. The NoLiMa benchmark from 2025 tested twelve major models and found a **fifty percent accuracy drop** once you cross thirty-two thousand tokens. The model literally makes worse decisions as context fills up — before it even compacts.
+After compaction it gets worse. Files the agent read, the specific lines it looked at, the patterns it spotted, all of that becomes a one-line summary. Decisions it made, the whole reasoning chain that got it to an architectural choice, flattened. Errors it found and fixed, the stack trace, the root cause, summarized into nothing. Your corrections, the thing you spent five minutes explaining about how your project works, lost.
 
-And after compaction? Files it read — gone. The specific lines it looked at, the patterns it noticed — replaced by a one-line summary. Decisions it made — gone. The reasoning chain that led to an architectural choice — flattened. Errors it encountered and fixed — gone. The exact stack trace, the root cause analysis — summarized away. Your corrections — gone. That thing you spent five minutes explaining about your project's conventions — lost.
+This happens every twenty to thirty minutes in a real session. Every time, you lose fifteen minutes re-explaining everything.
 
-*(pause)*
-
-Fifteen minutes lost every time this happens, re-explaining your codebase from scratch. And it happens every twenty to thirty minutes in a real coding session.
-
-For a fifty-seat engineering team at a hundred dollars per seat per month — that's sixty thousand dollars a year burned on an agent that forgets everything and makes you repeat yourself.
+For a fifty-person team at a hundred bucks per seat per month, that adds up to sixty thousand a year. Spent on an agent that keeps forgetting who you are.
 
 ---
 
 ## Slide 6 — What if the data never entered context?
 
-*(let it sit for two seconds)*
+*(two seconds of silence)*
 
 What if the data never entered the context window in the first place?
 
-*(pause)*
-
-Not compression. Not better summarization. Not a bigger context window. What if the fifty-nine kilobytes from `gh issue list` simply never became part of the conversation history at all?
+Not better compression. Not smarter summarization. Not a bigger window. What if those fifty-nine kilobytes from `gh issue list` simply never became part of the conversation?
 
 ---
 
 ## Slide 7 — Intercept
 
-context-mode intercepts.
+context-mode intercepts it.
 
-*(pause)*
+Technically, it's an MCP server. Sits between the agent and its tools. Every tool call goes through a routing engine. The key design choice: it hooks into the agent's lifecycle, not the tools themselves.
 
-It's an MCP server — Model Context Protocol — that sits between your agent and its tools. Every tool call passes through a routing engine. And this is the key architectural decision: it hooks into the agent's own lifecycle, not the tools themselves.
+There are five hooks. Each one does one thing.
 
-Five hooks. Each one does something specific:
+PreToolUse fires before a tool runs. This is where dangerous stuff gets caught. `curl`, `wget`, inline HTTP, `rm -rf`. Blocked or redirected to a sandbox. Commands that would produce large output get flagged.
 
-**PreToolUse** fires before a tool executes. This is where dangerous commands get blocked — `curl`, `wget`, inline HTTP, `rm -rf`. They get redirected to a sandbox or denied entirely. Large output commands get flagged for interception.
+PostToolUse fires after a tool returns. This is the main interception point. Your fifty-nine kilobytes of JSON goes into a local FTS5 database. Full-text search with BM25 ranking. The agent gets back a 1.1 kilobyte summary. Same information. Ninety-eight percent fewer tokens.
 
-**PostToolUse** fires after a tool returns. This is the main interception point. The raw output — your fifty-nine kilobytes of JSON — goes into a local FTS5 database. Full-text search with BM25 ranking. The agent gets back a one-point-one kilobyte summary instead. Same answer. Ninety-eight percent fewer tokens.
+And this isn't truncation. The full data is still there, still searchable. The agent can query it anytime with `ctx_search`. It just doesn't sit in the conversation getting re-sent fifty times.
 
-*(pause)*
-
-The critical thing: this isn't filtering or truncating. The full data is preserved and searchable. The agent can query it anytime with `ctx_search`. It just doesn't sit in the conversation history getting re-sent fifty times.
-
-On platforms with native hook support — Claude Code, Codex CLI — the routing is automatic. The hooks fire on every tool call without the agent having to do anything different. On platforms without hooks — Cursor, Copilot, Gemini CLI — context-mode injects routing rules into the system prompt. The agent learns to call `ctx_execute` and `ctx_search` instead of raw tool calls. Same result, different mechanism. That's how one plugin works across fourteen platforms.
+Now, how does one plugin work on fourteen different platforms? Three mechanisms. Claude Code and Codex have native hook support, so routing is automatic. The hooks fire on every tool call, the agent doesn't need to change anything. Cursor and Copilot have MCP support but no hooks, so context-mode runs as an MCP server exposing tools like `ctx_execute` and `ctx_search`. The agent learns to use them. Newer CLIs with neither get routing rules injected into the system prompt. Three approaches, one plugin, same outcome.
 
 ---
 
 ## Slide 8 — Sandbox (Think in Code)
 
-Sandbox.
+Sandbox. This took the longest to get right.
 
-*(pause)*
+We call it Think in Code. Here's the problem it solves.
 
-This is the paradigm shift, and it's the part that took the longest to get right. We call it **Think in Code**.
+Even with interception handling tool output, the agent still wants to pull data into context to "think about it." It reads forty-seven files with `Read()` to understand a codebase. Seven hundred kilobytes in context. Runs `cat access.log` to find errors. Forty-five kilobytes.
 
-Here's the problem it solves. Even with interception, the agent still has a bad habit: it wants to pull data into context to analyze it. It calls `Read()` on forty-seven files to understand a codebase. That's seven hundred kilobytes in context. It runs `cat access.log` to find error patterns. Forty-five kilobytes.
+Think in Code flips that. Instead of pulling data in for the model to read, you send code to the data. The agent writes a small script. context-mode runs it in a sandbox. Only stdout comes back to context.
 
-Think in Code flips this. Instead of pulling data into context for the model to "read" — you send code to the data. The agent writes a JavaScript or Python script. context-mode executes it in a sandboxed subprocess. Only the stdout — the agent's own printed conclusions — enters context.
+Real example. Access logs. Before: `cat access.log`, forty-five kilobytes enters context, stays there forever, re-sent every turn. After: `ctx_execute("javascript", ...)`, agent writes five lines to filter 500-errors and count them. 155 bytes of stdout enters context. The log file never touches the conversation.
 
-*(pause)*
+Two hundred times smaller. And I'd argue the agent does better work this way. Writing real analysis code is just more reliable than asking a language model to eyeball a log file.
 
-Concrete example: analyzing access logs. Before — `cat access.log`, forty-five kilobytes enters context, stays there forever, gets re-sent on every turn. After — `ctx_execute("javascript", ...)`, the agent writes five lines of code to filter five-hundred errors and count them. One hundred fifty-five bytes of stdout enters context. The forty-five kilobyte log file never touches the conversation.
+Since version 1.0.64, Think in Code is mandatory across all fourteen platform configs. Not a suggestion. Enforced by routing rules. If the agent tries to `Read()` a big file for analysis, PreToolUse redirects it to `ctx_execute_file`. The file loads into a `FILE_CONTENT` variable inside the sandbox. Agent writes code against it. Only stdout returns.
 
-Two hundred times reduction. And the agent arguably does a better job — because it's writing actual analysis code instead of trying to pattern-match in a text window.
-
-*(pause)*
-
-As of version 1.0.64, Think in Code is mandatory across all fourteen platform configs. It's not a suggestion in the docs. It's enforced by the routing rules. If the agent tries to `Read()` a large file for analysis, PreToolUse redirects it to `ctx_execute_file` instead. The raw file loads into a `FILE_CONTENT` variable inside the sandbox. The agent writes code against it. Only stdout comes back.
-
-Your CPU does the processing for free. Tokens cost money. This is the right trade-off.
+Your CPU does the work for free. Tokens cost money.
 
 ---
 
-## Slide 9 — Index (Session Persistence)
+## Slide 9 — Index (Session persistence)
 
 Index.
 
-*(pause)*
+Everything the agent has touched goes into a local SQLite database. FTS5 virtual table, BM25 ranking. Tool outputs, web pages that got fetched and chunked, sandbox results. All full-text searchable. The agent runs `ctx_search`, gets ranked results. Like a local search engine for everything the agent has seen this session.
 
-Everything the agent touches goes into a local SQLite database with an FTS5 virtual table and BM25 ranking. Tool outputs, web pages fetched and chunked, sandbox execution results — all full-text searchable. The agent calls `ctx_search` with a query, gets ranked results back. Like a local search engine for everything the agent has ever seen in this session.
+But here's the part that actually matters. Session persistence.
 
-But here's what actually makes context-mode different from a caching layer. **Session persistence.**
+PostToolUse doesn't just capture tool output. It captures events. Fifteen categories, in real time. File operations, git commands, errors and how they got fixed, your corrections, environment details, project rules, decision points. All of it goes to a SessionDB, a separate SQLite store.
 
-*(pause)*
+When context fills up and the agent compacts, normally that's it. Everything is gone. But context-mode has a PreCompact hook. Right before the wipe, it builds a structured snapshot of the session. Not a summary. Structured references to everything in the knowledge base.
 
-PostToolUse doesn't just capture tool output. It captures events. Fifteen categories of events, as they happen in real-time: file operations, git commands, errors and their fixes, user corrections, environment details, project rules, decision points. All of it goes into a SessionDB — a separate SQLite store.
+Then SessionStart fires on the next turn. Restores the snapshot. Reloads indexed knowledge. The agent picks up where it was, mid-thought.
 
-When the context window fills up and the agent compacts — normally that's game over. Everything summarized and lost. But context-mode has a **PreCompact** hook. Right before the wipe happens, it builds a structured snapshot of the entire session state. Not a lossy summary — structured references to everything in the knowledge base.
+Twenty-six event categories survive each compaction and `--resume`. Your prompts, tracked files, project rules, decisions, git operations, errors and fixes, environment, session mode, tool patterns.
 
-Then **SessionStart** fires on the next turn. It restores that snapshot. Reloads the indexed knowledge. The agent picks up mid-thought.
-
-*(pause)*
-
-Twenty-six event categories carry over through each compaction and through `--resume`. Your prompts, files tracked, project rules, decisions, git operations, errors and fixes, environment state, session mode, tool usage patterns.
-
-The agent compacts? It doesn't forget. It searches the knowledge base and picks up exactly where it left off. You never have to explain your codebase twice. You never re-describe your conventions. You never re-establish the context of what you're building.
+You stop explaining your codebase from scratch. The agent already knows. It just looks it up.
 
 ---
 
-## Slide 10 — Measured Results
+## Slide 10 — Measured results
 
-Let's look at the actual numbers.
+Numbers.
 
-*(pause)*
+Playwright browser snapshot: fifty-six kilobytes of raw DOM. With context-mode, 299 bytes. The relevant elements, search-ranked. 99.5% reduction.
 
-Playwright browser snapshot: fifty-six kilobytes raw DOM. With context-mode: two hundred ninety-nine bytes. A search summary of the relevant elements. Ninety-nine point five percent reduction.
+GitHub Issues: fifty-nine kilobytes of JSON. With context-mode, 1.1 kilobytes. The issues matching the agent's actual question. 98% reduction.
 
-GitHub Issues query: fifty-nine kilobytes of JSON. With context-mode: one-point-one kilobytes. The issues matching the agent's actual question. Ninety-eight percent reduction.
+Access log analysis: forty-five kilobytes of logs. With Think in Code, 155 bytes of stdout. 99.7% reduction.
 
-Access log analysis: forty-five kilobytes of raw logs. With context-mode and Think in Code: one hundred fifty-five bytes of stdout. Ninety-nine point seven percent reduction.
+Full session, fifty turns. Thirty megabytes re-sent drops to one. On top of that, context-mode enforces output compression. The agent cuts filler, pleasantries, over-explanation. 65 to 75 percent output token savings stacked on input reduction.
 
-*(pause)*
-
-Aggregate across a full fifty-turn session — thirty megabytes re-sent becomes one megabyte. And it's not just input tokens. context-mode also enforces output compression — the agent drops filler words, pleasantries, verbose explanations. Sixty-five to seventy-five percent output token savings on top of the input reduction.
-
-**Ninety-eight to ninety-nine point five percent** total context reduction. Same work. Same answers. The agent doesn't lose any capability. It actually gains capability — because it can work longer before hitting the context wall, and it makes better decisions because the context window isn't polluted with stale tool output.
+98 to 99.5 percent less context used. The agent does the same work, gets the same answers. But it can go longer without hitting the wall. And it makes better decisions because the window isn't stuffed with stale output from thirty turns ago.
 
 ---
 
 ## Slide 11 — Close
 
-context-mode. Open source. Elastic License 2.0. Always has been.
+context-mode. Open source. Elastic License 2.0.
 
-*(pause)*
+Over 95,000 users. 79,000 npm downloads. Fourteen platform adapters. 10,000 GitHub stars. Teams at Microsoft, Google, Meta, ByteDance, GitHub, Stripe, Datadog, NVIDIA, Supabase use it.
 
-Ninety-five thousand users. Seventy-nine thousand npm downloads. Fourteen platform adapters. Ten thousand GitHub stars. Used across teams at Microsoft, Google, Meta, ByteDance, GitHub, Stripe, Datadog, NVIDIA, Supabase, and more.
+Fourteen adapters. Claude Code, Cursor, Codex CLI, VS Code Copilot, JetBrains Copilot, Gemini CLI, Qwen Code, Kiro, OpenCode, KiloCode, Zed, Pi, Antigravity. And a native OpenClaw adapter. Which feels right to mention here tonight.
 
-Fourteen adapters — Claude Code, Cursor, Codex CLI, VS Code Copilot, JetBrains Copilot, Gemini CLI, Qwen Code, Kiro, OpenCode, KiloCode, Zed, Pi, Antigravity — and a native **OpenClaw adapter**, which feels especially right to mention here at ClawCon tonight.
-
-*(pause)*
-
-The adapter architecture is the reason one plugin works everywhere. Platforms with lifecycle hooks — Claude Code, Codex — get automatic interception at the hook level. Platforms with MCP support but no hooks — Cursor, Copilot — get an MCP server that exposes `ctx_execute`, `ctx_search`, `ctx_batch_execute` as tools the agent can call. Platforms with neither — some newer CLIs — get instruction-based routing injected into the system prompt. Three mechanisms, one plugin, same result.
-
-*(pause)*
-
-It's open source because I believe the answer to the problem I just showed you can only come from the community — not from vendors. The vendors have no incentive to reduce token usage. That's their revenue. The solution has to come from the ecosystem.
+Why open source? Because honestly, I don't see how this problem gets solved by the companies selling you tokens. They have zero incentive to help you use fewer of them. That's their business model. So it has to come from us.
 
 context-mode.com.
 
-Thank you again to Veli, Furkan, Murat, and ClawCon.
+Thank you Veli, Furkan, Murat, and ClawCon.
