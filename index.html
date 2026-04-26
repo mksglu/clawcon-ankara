@@ -127,13 +127,13 @@
 
     <!-- Progress Bar -->
     <div class="fixed top-0 left-0 right-0 h-[3px] bg-cm-border z-50">
-        <div id="progressBar" class="progress-bar h-full bg-cm-rust" style="width: 9.1%"></div>
+        <div id="progressBar" class="progress-bar h-full bg-cm-rust" style="width: 8.3%"></div>
     </div>
 
     <!-- Navigation -->
     <div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-cm-border">
         <button onclick="prevSlide()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-cm-muted hover:text-cm-text"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <span id="slideCounter" class="font-mono text-xs text-cm-muted min-w-[3rem] text-center">1 / 11</span>
+        <span id="slideCounter" class="font-mono text-xs text-cm-muted min-w-[3rem] text-center">1 / 12</span>
         <button onclick="nextSlide()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-cm-muted hover:text-cm-text"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <span class="text-cm-border">|</span>
         <button onclick="toggleNotes()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-cm-muted hover:text-cm-text font-mono text-[10px]" title="Press S">S</button>
@@ -295,8 +295,61 @@
         </div>
     </div>
 
-    <!-- ==================== SLIDE 5: THE BREAKING POINT ==================== -->
+    <!-- ==================== SLIDE 5: SOURCE CODE PROOF ==================== -->
     <div data-slide="4" class="slide">
+        <div class="max-w-4xl mx-auto w-full animate-in">
+            <div class="section-label mb-4">Under the hood</div>
+            <h2 class="font-serif text-5xl md:text-6xl text-cm-text mb-8">I traced it in the source code.</h2>
+
+            <div class="max-w-3xl mx-auto">
+                <!-- mutableMessages -->
+                <div class="bg-gray-50 border border-cm-border rounded-xl p-6 mb-6">
+                    <div class="font-mono text-sm leading-relaxed">
+                        <span class="text-cm-muted">// Claude Code's conversation state</span><br>
+                        <span class="text-cm-blue">const</span> <span class="text-cm-text font-semibold">mutableMessages</span> = [<br>
+                        &nbsp;&nbsp;...userMessages,<br>
+                        &nbsp;&nbsp;...assistantResponses,<br>
+                        &nbsp;&nbsp;...<span class="text-cm-red font-semibold">toolResults</span>, &nbsp;<span class="text-cm-muted">// &larr; every tool output, every turn</span><br>
+                        ];<br><br>
+                        <span class="text-cm-muted">// Sent to Anthropic API on EVERY call</span><br>
+                        api.call(<span class="text-cm-text font-semibold">mutableMessages</span>); <span class="text-cm-muted">// print.ts:L2965</span>
+                    </div>
+                </div>
+
+                <!-- Key findings -->
+                <div class="space-y-4 mb-8">
+                    <div class="slide-in-1 flex items-start gap-3">
+                        <span class="text-cm-rust font-mono text-lg mt-0.5">&rsaquo;</span>
+                        <span class="font-sans text-lg text-cm-text"><span class="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded">truncate_function_output_payload()</span> shortens large outputs &mdash; but <span class="font-semibold text-cm-red">never removes them</span></span>
+                    </div>
+                    <div class="slide-in-2 flex items-start gap-3">
+                        <span class="text-cm-rust font-mono text-lg mt-0.5">&rsaquo;</span>
+                        <span class="font-sans text-lg text-cm-text">Tool output stays in the array until compaction fires</span>
+                    </div>
+                    <div class="slide-in-3 flex items-start gap-3">
+                        <span class="text-cm-rust font-mono text-lg mt-0.5">&rsaquo;</span>
+                        <span class="font-sans text-lg text-cm-text">Prompt cache TTL is <span class="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded">5 minutes</span> &mdash; cold resume = full-price re-send</span>
+                    </div>
+                </div>
+
+                <!-- The punchline -->
+                <div class="slide-in-4 bg-cm-rust/5 border border-cm-rust/20 rounded-xl p-6 text-center">
+                    <p class="font-sans text-xl text-cm-text">
+                        200K context window. Tool output takes 150K.<br>
+                        <span class="stat-rust text-4xl mt-2 inline-block">50K left for reasoning.</span>
+                    </p>
+                    <p class="text-cm-muted text-base mt-2">The tool output ate your thinking space.</p>
+                </div>
+            </div>
+        </div>
+        <div class="speaker-notes" data-notes="4">
+            <div class="notes-label">Slide 5</div>
+            <p>I didn't just observe this, I traced it in the source code. <span class="pause">[pause]</span> Claude Code keeps an array called mutableMessages. Every message, every response, every tool result. This array ships to the Anthropic API on every single turn. There's a function called truncate_function_output_payload that shortens big outputs, but it never removes them. They sit in the array until compaction runs. <span class="pause">[pause]</span> And the prompt cache has a five-minute TTL. If you resume a session after the cache expires, the full mutableMessages array gets re-sent at full price. No cache hits. <span class="pause">[pause]</span> So think about this. You set a 200K context window. Tool output takes 150K of it. You have 50K left for reasoning. The tool output ate your thinking space.</p>
+        </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: THE BREAKING POINT ==================== -->
+    <div data-slide="5" class="slide">
         <div class="max-w-4xl mx-auto w-full animate-in">
             <div class="section-label mb-4">The breaking point</div>
             <h2 class="font-serif text-5xl md:text-6xl text-cm-text mb-6">When the context fills up,<br>everything disappears.</h2>
@@ -349,28 +402,28 @@
                 </div>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="4">
-            <div class="notes-label">Slide 5</div>
+        <div class="speaker-notes" data-notes="5">
+            <div class="notes-label">Slide 6</div>
             <p>And when it fills up, everything disappears. <span class="pause">[pause]</span> Files it read. Gone. Decisions it made. Gone. Errors it encountered and fixed. Gone. Your instructions and corrections. Gone. The task it was in the middle of building. Gone. <span class="pause">[pause]</span> Fifty percent accuracy drop after thirty-two thousand tokens. Fifteen minutes lost every time it resets, re-explaining your codebase from scratch. Sixty thousand dollars a year for a fifty-seat team, burned on an agent that forgets everything every twenty minutes.</p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 6: TRANSITION ==================== -->
-    <div data-slide="5" class="slide">
+    <!-- ==================== SLIDE 7: TRANSITION ==================== -->
+    <div data-slide="6" class="slide">
         <div class="max-w-4xl mx-auto text-center animate-in">
             <div class="section-label mb-8">The Solution</div>
             <h2 class="font-serif text-6xl md:text-7xl lg:text-8xl text-cm-text leading-tight">
                 What if the data<br>never entered context?
             </h2>
         </div>
-        <div class="speaker-notes" data-notes="5">
-            <div class="notes-label">Slide 6</div>
+        <div class="speaker-notes" data-notes="6">
+            <div class="notes-label">Slide 7</div>
             <p><span class="pause">[let it sit for a moment]</span> What if the data never entered the context window in the first place?</p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 7: INTERCEPT ==================== -->
-    <div data-slide="6" class="slide">
+    <!-- ==================== SLIDE 8: INTERCEPT ==================== -->
+    <div data-slide="7" class="slide">
         <div class="max-w-5xl mx-auto w-full animate-in">
             <div class="section-label mb-4">context-mode &middot; Step 1</div>
             <h2 class="font-serif text-5xl md:text-6xl text-cm-text mb-10">Intercept.</h2>
@@ -433,14 +486,14 @@
                 </div>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="6">
-            <div class="notes-label">Slide 7</div>
+        <div class="speaker-notes" data-notes="7">
+            <div class="notes-label">Slide 8</div>
             <p>context-mode intercepts. <span class="pause">[pause]</span> Your agent calls gh issue list. Fifty-nine kilobytes of JSON come back. Normally, all of that dumps straight into your context window. But context-mode is sitting between the agent and its tools. It uses five lifecycle hooks — PreToolUse, PostToolUse, SessionStart, PreCompact, UserPromptSubmit — to intercept tool output before it reaches the conversation. The full fifty-nine kilobytes goes to a local FTS5 database. Only a one-point-one kilobyte summary enters context. The agent still gets the answer. Your context window barely notices.</p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 8: SANDBOX ==================== -->
-    <div data-slide="7" class="slide">
+    <!-- ==================== SLIDE 9: SANDBOX ==================== -->
+    <div data-slide="8" class="slide">
         <div class="max-w-5xl mx-auto w-full animate-in">
             <div class="section-label mb-4">context-mode &middot; Step 2</div>
             <h2 class="font-serif text-5xl md:text-6xl text-cm-text mb-10">Sandbox.</h2>
@@ -487,14 +540,14 @@
                 </div>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="7">
-            <div class="notes-label">Slide 8</div>
+        <div class="speaker-notes" data-notes="8">
+            <div class="notes-label">Slide 9</div>
             <p>Sandbox. <span class="pause">[pause]</span> This is the paradigm shift. We call it Think in Code. Instead of pulling forty-five kilobytes of access logs into your context window for the agent to read, you send code to the data. The agent writes a small script, context-mode executes it in a sandbox, and only the stdout — one hundred fifty-five bytes — enters context. <span class="pause">[pause]</span> Two hundred times reduction. The agent still gets the answer. It wrote the analysis. But the raw data never touched the context window. This is mandatory across all fourteen platforms context-mode supports.</p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 9: INDEX ==================== -->
-    <div data-slide="8" class="slide">
+    <!-- ==================== SLIDE 10: INDEX ==================== -->
+    <div data-slide="9" class="slide">
         <div class="max-w-5xl mx-auto w-full animate-in">
             <div class="section-label mb-4">context-mode &middot; Step 3</div>
             <h2 class="font-serif text-5xl md:text-6xl text-cm-text mb-10">Index.</h2>
@@ -551,14 +604,14 @@
                 </div>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="8">
-            <div class="notes-label">Slide 9</div>
+        <div class="speaker-notes" data-notes="9">
+            <div class="notes-label">Slide 10</div>
             <p>Index. <span class="pause">[pause]</span> Everything the agent touches goes into a local FTS5 database with BM25 ranking. Tool outputs, web pages, sandbox results — all searchable. But here's what makes it special: session persistence. <span class="pause">[pause]</span> Twenty-six event categories — files modified, decisions made, errors encountered, user corrections, git state, environment details — all of it carries over through compactions and even through session resume. The agent compacts? It doesn't forget. It searches the knowledge base and picks up right where it left off. You never have to explain your codebase twice.</p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 10: MEASURED RESULTS ==================== -->
-    <div data-slide="9" class="slide">
+    <!-- ==================== SLIDE 11: MEASURED RESULTS ==================== -->
+    <div data-slide="10" class="slide">
         <div class="max-w-5xl mx-auto w-full animate-in">
             <div class="section-label mb-4">Measured Results</div>
             <h2 class="font-serif text-5xl md:text-6xl text-cm-text mb-10">Before &amp; After.</h2>
@@ -618,14 +671,14 @@
                 <div class="text-cm-muted font-sans text-xl mt-3">context reduction. Same work. Same answers.</div>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="9">
-            <div class="notes-label">Slide 10</div>
+        <div class="speaker-notes" data-notes="10">
+            <div class="notes-label">Slide 11</div>
             <p>Let's look at the numbers. <span class="pause">[pause]</span> Playwright snapshot: fifty-six kilobytes down to two hundred ninety-nine bytes. Ninety-nine point five percent reduction. GitHub issues: fifty-nine kilobytes down to one point one. Access logs: forty-five kilobytes down to one hundred fifty-five bytes. <span class="pause">[pause]</span> Per session, thirty megabytes re-sent becomes one megabyte. Ninety-eight to ninety-nine point five percent context reduction. Same work. Same answers. The agent doesn't lose any capability. It just stops wasting your context window on data it already processed.</p>
         </div>
     </div>
 
-    <!-- ==================== SLIDE 11: CLOSE ==================== -->
-    <div data-slide="10" class="slide">
+    <!-- ==================== SLIDE 12: CLOSE ==================== -->
+    <div data-slide="11" class="slide">
         <div class="max-w-4xl mx-auto text-center animate-in">
             <div class="section-label mb-6">Open Source</div>
             <h2 class="font-serif italic text-7xl md:text-8xl lg:text-9xl mb-3 text-cm-text">
@@ -671,8 +724,8 @@
                 <p class="text-cm-muted font-sans text-lg">Thank you.</p>
             </div>
         </div>
-        <div class="speaker-notes" data-notes="10">
-            <div class="notes-label">Slide 11</div>
+        <div class="speaker-notes" data-notes="11">
+            <div class="notes-label">Slide 12</div>
             <p>context-mode. Open source. Always has been. <span class="pause">[pause]</span> Ninety-five thousand users. Seventy-nine thousand npm downloads. Fourteen platform adapters, including a native OpenClaw adapter, which feels right to mention here tonight. Ten thousand GitHub stars. <span class="pause">[pause]</span> It's open source because I believe the answer to the problem I just showed you can only come from the community, not from vendors. <span class="pause">[pause]</span> context-mode.com. Thank you again to Veli, Furkan, Murat, and ClawCon.</p>
         </div>
     </div>
@@ -680,7 +733,7 @@
     <!-- ==================== JS ==================== -->
     <script>
         let current = 0;
-        const total = 11;
+        const total = 12;
         let notesVisible = false;
 
         function showSlide(n) {
