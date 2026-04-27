@@ -162,7 +162,7 @@
         </div>
         <div class="speaker-notes" data-notes="0">
             <div class="notes-label">Slide 1</div>
-            <p>Good evening everyone. Quick thank you to Veli and Furkan from BuilderMare, to Murat Aslan, and to ClawCon and the OpenClaw community for making this happen in Ankara. <span class="pause">[pause]</span> I'm Mert. I build open-source tools for AI coding agents. Tonight I want to show you a problem that every single person in this room is living with. You just might not have a name for it yet.</p>
+            <p>Hey everyone, good evening. Before anything — thank you Veli, Furkan, Murat, ClawCon, OpenClaw. Really happy to be here in Ankara tonight. <span class="pause">[pause]</span> So. I'm Mert. I build context-mode, it's an open-source MCP server. And tonight I want to talk about something that's been bugging me. I think it bugs you too — you just haven't named it yet.</p>
         </div>
     </div>
 
@@ -180,7 +180,7 @@
         </div>
         <div class="speaker-notes" data-notes="1">
             <div class="notes-label">Slide 2</div>
-            <p>Let's start with a fact that might surprise you. <span class="pause">[pause]</span> Your AI coding agent has no memory. None. Claude Code, Cursor, Copilot, Codex, Gemini CLI. Under the hood, they all work exactly the same way. The model is stateless. It doesn't remember anything from one turn to the next. So how does it seem like it remembers? Let me show you.</p>
+            <p>OK so here's the thing. Your AI agent? It doesn't remember anything. I know it feels like it does. But it doesn't. Claude Code, Cursor, Copilot, Codex, Gemini CLI — doesn't matter. Same story under the hood. The model is stateless. Zero memory between turns. <span class="pause">[pause]</span> What looks like memory? That's just re-sending. Every turn, the whole conversation gets packed up and sent again. From scratch. Let me show you what that looks like.</p>
         </div>
     </div>
 
@@ -243,7 +243,7 @@
         </div>
         <div class="speaker-notes" data-notes="2">
             <div class="notes-label">Slide 3</div>
-            <p>Here's what actually happens. <span class="pause">[pause]</span> Turn one, you ask something, a tool runs, sixty kilobytes come back. That's fine. Turn five, all the output from turns one through four gets re-sent along with the new stuff. Three hundred kilobytes now. Turn fifteen, everything ships again. Six hundred kilobytes. Turn thirty, you're at 1.2 megabytes and the context window is almost full. <span class="pause">[pause]</span> Turn thirty-one? The agent compacts. It summarizes the conversation. Throws away the originals. And just like that, it forgets everything it read, every decision it made, the task it was in the middle of. You start over.</p>
+            <p>So here's what's really going on. Turn one, you ask something, tool runs, 60 KB comes back. Fine. No big deal. Turn five — now you've got everything from turns one through four, plus the new stuff. 300 KB. Turn fifteen, same thing. 600 KB. Turn thirty — 1.2 megabytes on a single API call. <span class="pause">[pause]</span> Turn thirty-one? Context window is full. Agent panics, summarizes everything, throws away the originals. Everything it read, every decision, the thing it was halfway through building — gone. And now you're explaining your codebase again. From scratch.</p>
         </div>
     </div>
 
@@ -291,7 +291,7 @@
         </div>
         <div class="speaker-notes" data-notes="3">
             <div class="notes-label">Slide 4</div>
-            <p>Let me make this concrete. <span class="pause">[pause]</span> You run gh issue list. One command. Fifty-nine kilobytes of JSON come back. About fifteen thousand tokens. Seems reasonable, right? <span class="pause">[pause]</span> But next turn, those fifteen thousand tokens ship again. Turn after that, again. Fifty turns in, that single command has cost you seven hundred fifty thousand input tokens. <span class="pause">[pause]</span> And you're not running one command per session. You're running twenty. Average output: thirty kilobytes each. That's thirty megabytes of input tokens. On tool output alone. That's where your context goes.</p>
+            <p>Let me make this real. You run gh issue list. One command. 59 KB of JSON comes back. About 15,000 tokens. Fine, right? <span class="pause">[pause]</span> But those 15,000 tokens are now part of the conversation. Next turn, they ship again. Turn after that, again. The agent isn't even looking at that data anymore — it already gave you the answer. But the protocol says full conversation, every API call. <span class="pause">[pause]</span> Fifty turns in? That one command has cost you 750,000 tokens. And nobody runs just one command. You're running twenty, thirty. That's 30 megabytes of input tokens per session. Just tool output. That's where your context goes.</p>
         </div>
     </div>
 
@@ -351,7 +351,7 @@
         </div>
         <div class="speaker-notes" data-notes="4">
             <div class="notes-label">Slide 5</div>
-            <p>And when it fills up, everything disappears. <span class="pause">[pause]</span> Files it read. Gone. Decisions it made. Gone. Errors it encountered and fixed. Gone. Your instructions and corrections. Gone. The task it was in the middle of building. Gone. <span class="pause">[pause]</span> Fifty percent accuracy drop after thirty-two thousand tokens. Fifteen minutes lost every time it resets, re-explaining your codebase from scratch. Sixty thousand dollars a year for a fifty-seat team, burned on an agent that forgets everything every twenty minutes.</p>
+            <p>So the context fills up. What now? The agent compacts. But summarization is lossy — 50% accuracy drop past 32K tokens. <span class="pause">[pause]</span> Files it read — now a one-line summary. Decisions it made — flattened. Errors it fixed — gone. That thing you spent five minutes explaining — lost. This happens every twenty to thirty minutes. Every time, you lose fifteen minutes re-explaining. <span class="pause">[pause]</span> For a fifty-person team at a hundred bucks per seat — that's 60K a year. On an agent that keeps forgetting who you are.</p>
         </div>
     </div>
 
@@ -365,7 +365,7 @@
         </div>
         <div class="speaker-notes" data-notes="5">
             <div class="notes-label">Slide 6</div>
-            <p><span class="pause">[let it sit for a moment]</span> What if the data never entered the context window in the first place?</p>
+            <p><span class="pause">[let it sit]</span> What if the data never entered the context window in the first place? Not better compression. Not smarter summarization. Not a bigger window. What if those 59 KB just... never became part of the conversation?</p>
         </div>
     </div>
 
@@ -435,7 +435,7 @@
         </div>
         <div class="speaker-notes" data-notes="6">
             <div class="notes-label">Slide 7</div>
-            <p>context-mode intercepts. <span class="pause">[pause]</span> Your agent calls gh issue list. Fifty-nine kilobytes of JSON come back. Normally, all of that dumps straight into your context window. But context-mode is sitting between the agent and its tools. It uses five lifecycle hooks — PreToolUse, PostToolUse, SessionStart, PreCompact, UserPromptSubmit — to intercept tool output before it reaches the conversation. The full fifty-nine kilobytes goes to a local FTS5 database. Only a one-point-one kilobyte summary enters context. The agent still gets the answer. Your context window barely notices.</p>
+            <p>That's what context-mode does. It intercepts. <span class="pause">[pause]</span> It's an MCP server, sits between the agent and its tools. Five lifecycle hooks, each does one thing. PreToolUse catches dangerous stuff before it runs. PostToolUse — this is the big one — your 59 KB of JSON goes into a local FTS5 database. Full-text search, BM25 ranking. Agent gets back a 1.1 KB summary. Same info. 98% fewer tokens. <span class="pause">[pause]</span> And this isn't truncation. The full data is still there, still searchable. It just doesn't sit in the conversation getting re-sent fifty times. One plugin, fourteen platforms, three approaches, same outcome.</p>
         </div>
     </div>
 
@@ -489,7 +489,7 @@
         </div>
         <div class="speaker-notes" data-notes="7">
             <div class="notes-label">Slide 8</div>
-            <p>Sandbox. <span class="pause">[pause]</span> This is the paradigm shift. We call it Think in Code. Instead of pulling forty-five kilobytes of access logs into your context window for the agent to read, you send code to the data. The agent writes a small script, context-mode executes it in a sandbox, and only the stdout — one hundred fifty-five bytes — enters context. <span class="pause">[pause]</span> Two hundred times reduction. The agent still gets the answer. It wrote the analysis. But the raw data never touched the context window. This is mandatory across all fourteen platforms context-mode supports.</p>
+            <p>Sandbox. We call it Think in Code. <span class="pause">[pause]</span> Here's the problem — even with interception, the agent still wants to pull data into context to "think about it." 47 files to understand a codebase, 700 KB. Think in Code flips that. Instead of pulling data in, you send code to the data. Agent writes a small script, runs in a sandbox, only stdout comes back. <span class="pause">[pause]</span> Access logs. Before: cat access.log, 45 KB in context forever. After: five lines of JavaScript, 155 bytes of stdout. 200 times smaller. And honestly — the agent does better work this way. Your CPU does the work for free. Tokens cost money.</p>
         </div>
     </div>
 
@@ -553,7 +553,7 @@
         </div>
         <div class="speaker-notes" data-notes="8">
             <div class="notes-label">Slide 9</div>
-            <p>Index. <span class="pause">[pause]</span> Everything the agent touches goes into a local FTS5 database with BM25 ranking. Tool outputs, web pages, sandbox results — all searchable. But here's what makes it special: session persistence. <span class="pause">[pause]</span> Twenty-six event categories — files modified, decisions made, errors encountered, user corrections, git state, environment details — all of it carries over through compactions and even through session resume. The agent compacts? It doesn't forget. It searches the knowledge base and picks up right where it left off. You never have to explain your codebase twice.</p>
+            <p>Index. Everything the agent touches goes into a local SQLite database. FTS5, BM25 ranking. All searchable. But here's the part that actually matters — session persistence. <span class="pause">[pause]</span> PostToolUse doesn't just capture output. It captures events. File operations, git commands, errors and fixes, your corrections, decisions. When context fills up and the agent compacts — normally that's it, everything's gone. But context-mode has a PreCompact hook. Right before the wipe, it builds a structured snapshot. <span class="pause">[pause]</span> 26 event categories survive each compaction. You stop re-explaining. The agent already knows. It just looks it up.</p>
         </div>
     </div>
 
@@ -620,7 +620,7 @@
         </div>
         <div class="speaker-notes" data-notes="9">
             <div class="notes-label">Slide 10</div>
-            <p>Let's look at the numbers. <span class="pause">[pause]</span> Playwright snapshot: fifty-six kilobytes down to two hundred ninety-nine bytes. Ninety-nine point five percent reduction. GitHub issues: fifty-nine kilobytes down to one point one. Access logs: forty-five kilobytes down to one hundred fifty-five bytes. <span class="pause">[pause]</span> Per session, thirty megabytes re-sent becomes one megabyte. Ninety-eight to ninety-nine point five percent context reduction. Same work. Same answers. The agent doesn't lose any capability. It just stops wasting your context window on data it already processed.</p>
+            <p>OK. Numbers. <span class="pause">[pause]</span> Playwright snapshot — 56 KB down to 299 bytes. 99.5%. GitHub Issues — 59 KB down to 1.1 KB. 98%. Access logs — 45 KB down to 155 bytes. 99.7%. <span class="pause">[pause]</span> Full session, fifty turns. 30 megabytes re-sent drops to one. 98 to 99.5% less context. Same work. Same answers. The agent goes longer without hitting the wall. And it makes better decisions because the window isn't stuffed with stale output from thirty turns ago.</p>
         </div>
     </div>
 
@@ -673,7 +673,7 @@
         </div>
         <div class="speaker-notes" data-notes="10">
             <div class="notes-label">Slide 11</div>
-            <p>context-mode. Open source. Always has been. <span class="pause">[pause]</span> Ninety-five thousand users. Seventy-nine thousand npm downloads. Fourteen platform adapters, including a native OpenClaw adapter, which feels right to mention here tonight. Ten thousand GitHub stars. <span class="pause">[pause]</span> It's open source because I believe the answer to the problem I just showed you can only come from the community, not from vendors. <span class="pause">[pause]</span> context-mode.com. Thank you again to Veli, Furkan, Murat, and ClawCon.</p>
+            <p>context-mode. Open source. Always has been. <span class="pause">[pause]</span> 95,000 users. 79,000 npm downloads. 14 platforms. 10,000 GitHub stars. Including a native OpenClaw adapter — which feels right to mention here tonight. <span class="pause">[pause]</span> Why open source? Because honestly — I don't see how this problem gets solved by the companies selling you tokens. They have zero reason to help you use fewer. So it has to come from us. <span class="pause">[pause]</span> context-mode.com. Thank you Veli, Furkan, Murat, and ClawCon. Thanks everyone.</p>
         </div>
     </div>
 
