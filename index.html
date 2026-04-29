@@ -650,11 +650,11 @@
 
             <div class="flex flex-wrap items-center justify-center gap-10 mb-10">
                 <div class="text-center">
-                    <div class="stat-rust text-5xl">95K+</div>
+                    <div id="stat-users" class="stat-rust text-5xl">95K+</div>
                     <div class="text-cm-muted text-sm mt-1">users</div>
                 </div>
                 <div class="text-center">
-                    <div class="stat-rust text-5xl">79K</div>
+                    <div id="stat-npm" class="stat-rust text-5xl">79K</div>
                     <div class="text-cm-muted text-sm mt-1">npm</div>
                 </div>
                 <div class="text-center">
@@ -662,7 +662,7 @@
                     <div class="text-cm-muted text-sm mt-1">platforms</div>
                 </div>
                 <div class="text-center">
-                    <div class="stat-rust text-5xl">10K</div>
+                    <div id="stat-stars" class="stat-rust text-5xl">10K</div>
                     <div class="text-cm-muted text-sm mt-1">GitHub stars</div>
                 </div>
             </div>
@@ -747,6 +747,27 @@
             const diff = touchStartX - e.changedTouches[0].clientX;
             if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
         });
+
+        // Dynamic stats — fetch from stats.json CDN + GitHub API, fallback to hardcoded values
+        async function fetchStats() {
+            try {
+                const [stats, gh] = await Promise.allSettled([
+                    fetch('https://cdn.jsdelivr.net/gh/mksglu/context-mode@main/stats.json').then(r => r.json()),
+                    fetch('https://api.github.com/repos/mksglu/context-mode').then(r => r.json()),
+                ]);
+                if (stats.status === 'fulfilled') {
+                    const s = stats.value;
+                    if (s.message) document.getElementById('stat-users').textContent = s.message;
+                    if (s.npm) document.getElementById('stat-npm').textContent = s.npm;
+                }
+                if (gh.status === 'fulfilled' && gh.value.stargazers_count) {
+                    const stars = gh.value.stargazers_count;
+                    document.getElementById('stat-stars').textContent =
+                        stars >= 1000 ? (stars / 1000).toFixed(stars >= 10000 ? 1 : 1) + 'K' : stars;
+                }
+            } catch (_) { /* keep fallback values */ }
+        }
+        fetchStats();
     </script>
 </body>
 </html>
