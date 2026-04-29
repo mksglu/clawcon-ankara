@@ -502,51 +502,64 @@
             <div class="max-w-3xl mx-auto">
                 <p class="font-sans text-2xl text-cm-muted mb-10 max-w-2xl">
                     Everything the agent learns is <span class="text-cm-text font-semibold">searchable forever</span>.
-                    Even across compactions.
+                    Even across compactions <span class="text-cm-text font-semibold">and sessions</span>.
                 </p>
 
-                <!-- FTS5 Knowledge Base visualization -->
+                <!-- Unified Timeline Search — 3 sources -->
                 <div class="bg-gray-50 border border-cm-border rounded-2xl p-8 mb-8">
-                    <div class="font-mono text-xs uppercase tracking-widest text-cm-muted mb-5">Local FTS5/BM25 Knowledge Base</div>
+                    <div class="font-mono text-xs uppercase tracking-widest text-cm-muted mb-2">Unified Timeline Search</div>
+                    <div class="font-mono text-xs text-cm-muted mb-5">ctx_search(sort: &quot;timeline&quot;)</div>
 
                     <div class="space-y-3">
                         <div class="slide-in-1 flex items-center gap-3">
                             <div class="w-2 h-2 rounded-full bg-cm-rust shrink-0"></div>
                             <div class="flex-1 bg-white border border-cm-border rounded-lg px-4 py-2.5 flex justify-between items-center">
-                                <span class="font-mono text-sm text-cm-text">tool outputs</span>
-                                <span class="font-mono text-xs text-cm-muted">auto-indexed</span>
+                                <span class="font-mono text-sm text-cm-text">current session</span>
+                                <span class="font-mono text-xs text-cm-muted">tool outputs, sandbox results, web pages</span>
                             </div>
                         </div>
                         <div class="slide-in-2 flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-cm-rust shrink-0"></div>
-                            <div class="flex-1 bg-white border border-cm-border rounded-lg px-4 py-2.5 flex justify-between items-center">
-                                <span class="font-mono text-sm text-cm-text">web pages fetched</span>
-                                <span class="font-mono text-xs text-cm-muted">chunked &amp; indexed</span>
+                            <div class="w-2 h-2 rounded-full bg-cm-blue shrink-0"></div>
+                            <div class="flex-1 bg-blue-50/50 border border-cm-blue/20 rounded-lg px-4 py-2.5 flex justify-between items-center">
+                                <span class="font-mono text-sm text-cm-text font-medium">prior sessions</span>
+                                <span class="font-mono text-xs text-cm-blue">last 7 days &middot; SessionDB</span>
                             </div>
                         </div>
                         <div class="slide-in-3 flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-cm-rust shrink-0"></div>
-                            <div class="flex-1 bg-white border border-cm-border rounded-lg px-4 py-2.5 flex justify-between items-center">
-                                <span class="font-mono text-sm text-cm-text">file analysis results</span>
-                                <span class="font-mono text-xs text-cm-muted">sandbox stdout</span>
+                            <div class="w-2 h-2 rounded-full bg-cm-green shrink-0"></div>
+                            <div class="flex-1 bg-green-50/50 border border-cm-green/20 rounded-lg px-4 py-2.5 flex justify-between items-center">
+                                <span class="font-mono text-sm text-cm-text font-medium">auto-memory</span>
+                                <span class="font-mono text-xs text-cm-green">persistent preferences &middot; memory/*.md</span>
                             </div>
                         </div>
-                        <div class="slide-in-4 flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-cm-blue shrink-0"></div>
-                            <div class="flex-1 bg-blue-50/50 border border-cm-blue/20 rounded-lg px-4 py-2.5 flex justify-between items-center">
-                                <span class="font-mono text-sm text-cm-text font-medium">session events (26 categories)</span>
-                                <span class="font-mono text-xs text-cm-blue">survives compaction</span>
-                            </div>
+                    </div>
+                </div>
+
+                <!-- Auto-injection on compaction -->
+                <div class="slide-in-4 bg-gray-50 border border-cm-border rounded-2xl p-6 mb-8">
+                    <div class="font-mono text-xs uppercase tracking-widest text-cm-muted mb-4">On compaction &mdash; auto-injected</div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="font-mono text-sm text-cm-rust font-medium mb-1">&lt;behavioral_directive&gt;</div>
+                            <div class="text-cm-muted text-xs">active roles</div>
+                        </div>
+                        <div class="text-center border-l border-cm-border">
+                            <div class="font-mono text-sm text-cm-rust font-medium mb-1">&lt;rules&gt;</div>
+                            <div class="text-cm-muted text-xs">key decisions</div>
+                        </div>
+                        <div class="text-center border-l border-cm-border">
+                            <div class="font-mono text-sm text-cm-rust font-medium mb-1">&lt;active_skills&gt;</div>
+                            <div class="text-cm-muted text-xs">loaded skills</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Session persistence highlight -->
                 <div class="slide-in-5 bg-cm-rust/5 border border-cm-rust/20 rounded-xl p-6 text-center">
-                    <div class="font-serif italic text-3xl text-cm-rust mb-2">Session Persistence</div>
+                    <div class="font-serif italic text-3xl text-cm-rust mb-2">Unified Persistent Memory</div>
                     <p class="font-sans text-lg text-cm-muted max-w-xl mx-auto">
-                        <span class="stat-rust text-2xl">26</span> event categories carry over through compaction and <span class="font-mono text-sm">--resume</span>.
-                        The agent never has to re-learn your codebase.
+                        <span class="stat-rust text-2xl">26</span> event categories survive compaction, <span class="font-mono text-sm">--resume</span>, and new sessions.
+                        The agent never re-learns your codebase.
                     </p>
                 </div>
             </div>

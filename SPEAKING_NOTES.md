@@ -127,21 +127,17 @@ Your CPU does the work for free. Tokens cost money.
 
 ---
 
-## Slide 9 — Index (Session persistence)
+## Slide 9 — Index (Unified Persistent Memory)
 
 Index.
 
-Everything the agent touches goes into a local SQLite database. FTS5, BM25 ranking. Tool outputs, web pages, sandbox results. All searchable. Like a local search engine for everything the agent has seen.
+Everything the agent touches goes into a local SQLite database. FTS5, BM25 ranking. Tool outputs, web pages, sandbox results. All searchable.
 
-But here's the part that actually matters — session persistence.
+But here's what changed. Since v1.0.100, `ctx_search` has a timeline mode. It searches across three sources at once. Current session — tool outputs, indexed content. Prior sessions — events from the last seven days, stored in a separate SessionDB. And auto-memory — persistent preferences in markdown files. One query, three layers deep.
 
-PostToolUse doesn't just capture output. It captures events. Fifteen categories, real time. File operations, git commands, errors and fixes, your corrections, environment details, decisions. All of it goes to a separate SessionDB.
+And when context fills up and the agent compacts — it doesn't just save data. It auto-injects behavioral directives. Your active role, key decisions, loaded skills. Not a summary the model ignores. Actual behavioral rules. 500 token cap, fires only on compaction.
 
-When context fills up and the agent compacts — normally that's it. Everything is gone. But context-mode has a PreCompact hook. Right before the wipe, it builds a structured snapshot. Not a summary. Structured references to the knowledge base.
-
-Then SessionStart fires on the next turn. Restores the snapshot. Reloads indexed knowledge. The agent picks up right where it was.
-
-26 event categories survive each compaction. Your prompts, tracked files, project rules, decisions, git operations, errors, environment — all of it.
+26 event categories survive each compaction. Your prompts, tracked files, project rules, decisions, git operations, errors, constraints, rejected approaches — all of it carries over. Not just within a session. Across sessions.
 
 You stop re-explaining. The agent already knows. It just looks it up.
 

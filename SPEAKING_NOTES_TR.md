@@ -127,21 +127,17 @@ CPU'nuz bu isi bedavaya yapiyor. Token'lar para.
 
 ---
 
-## Slide 9 — Index (Session persistence)
+## Slide 9 — Index (Unified Persistent Memory)
 
 Index.
 
-Agent'in dokundugu her sey lokal bir SQLite veritabanina gidiyor. FTS5, BM25 siralama. Tool ciktilari, web sayfalari, sandbox sonuclari. Hepsi aranabilir. Agent'in bu session'da gordugu her sey icin lokal bir arama motoru gibi.
+Agent'in dokundugu her sey lokal bir SQLite veritabanina gidiyor. FTS5, BM25 siralama. Tool ciktilari, web sayfalari, sandbox sonuclari. Hepsi aranabilir.
 
-Ama asil onemli kisim — session persistence.
+Ama asil degisen sey su. v1.0.100'den beri `ctx_search`'un bir timeline modu var. Uc kaynakta ayni anda ariyor. Mevcut session — tool ciktilari, index'lenmis icerik. Onceki session'lar — son yedi gunun event'leri, ayri bir SessionDB'de. Ve auto-memory — markdown dosyalarinda kalici tercihler. Tek sorgu, uc katman.
 
-PostToolUse sadece cikti yakalmiyor. Event'leri yakaliyor. On bes kategori, gercek zamanli. Dosya islemleri, git komutlari, hatalar ve duzeltmeler, sizin duzetmeleriniz, ortam detaylari, kararlar. Hepsi ayri bir SessionDB'ye gidiyor.
+Ve context dolup agent compact yaptiginda — sadece veri kaydetmiyor. Behavioral directive'ler enjekte ediyor. Aktif rolunuz, kilit kararlar, yuklenmis skill'ler. Modelin gormezden geldigi bir ozet degil. Gercek davranissal kurallar. 500 token limiti, sadece compaction'da calisiyor.
 
-Context dolup agent compact yaptiginda — normalde is biter. Her sey gider. Ama context-mode'un PreCompact hook'u var. Silme isleminden hemen once yapilandirilmis bir snapshot olusturuyor. Ozet degil. Knowledge base'e yapilandirilmis referanslar.
-
-Sonra bir sonraki turn'de SessionStart atesleniyor. Snapshot'u geri yukluyor. Index'lenmis bilgiyi restore ediyor. Agent kaldigi yerden devam ediyor.
-
-26 event kategorisi her compaction'dan saglikli cikiyor. Promptlariniz, takip edilen dosyalar, proje kurallari, kararlar, git islemleri, hatalar, ortam bilgisi — hepsi.
+26 event kategorisi her compaction'dan saglikli cikiyor. Promptlariniz, takip edilen dosyalar, proje kurallari, kararlar, git islemleri, hatalar, kisitlamalar, reddedilen yaklasimlar — hepsi tasiyor. Sadece session icinde degil. Session'lar arasi.
 
 Bastan anlatmayi birakiyorsunuz. Agent zaten biliyor. Sadece bakip buluyor.
 
