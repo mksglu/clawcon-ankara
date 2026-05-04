@@ -1,6 +1,6 @@
 # Speaking Notes — The Other Half of the Context Problem
 
-**ClawCon Ankara** · April 29, 2026
+**ClawCon Istanbul** · May 6, 2026
 **Speaker:** B. Mert Koseoğlu
 
 ---
@@ -9,7 +9,7 @@
 
 Hey everyone, good evening.
 
-Before anything — thank you Veli, Furkan, Murat, ClawCon, OpenClaw. Really happy to be here in Ankara tonight.
+Before anything — thank you Veli, Furkan, Murat, ClawCon, OpenClaw. Really happy to be here in Istanbul tonight.
 
 So. I'm Mert. I build context-mode, it's an open-source MCP server. And tonight I want to talk about something that's been bugging me. I think it bugs you too — you just haven't named it yet.
 
@@ -163,7 +163,7 @@ Full session, fifty turns. 30 megabytes re-sent drops to one. Plus output compre
 
 context-mode. Open source. Always has been.
 
-95,000 users. 79,000 npm downloads. 14 platforms. 10,000 GitHub stars. Teams at Microsoft, Google, Meta, ByteDance, GitHub, Stripe, Datadog, NVIDIA, Supabase use it.
+125,000 users. 104,000 npm downloads. 14 platforms. 12,500 GitHub stars. Teams at Microsoft, Google, Meta, ByteDance, GitHub, Stripe, Datadog, NVIDIA, Supabase use it.
 
 14 adapters — Claude Code, Cursor, Codex, Gemini, Kiro, Cline, and more. Including a native OpenClaw adapter. Which feels right to mention here tonight.
 

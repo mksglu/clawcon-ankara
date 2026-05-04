@@ -1,6 +1,6 @@
 # Konusma Notlari — The Other Half of the Context Problem
 
-**ClawCon Ankara** · 29 Nisan 2026
+**ClawCon Istanbul** · 6 Mayıs 2026
 **Konusmaci:** B. Mert Koseoğlu
 
 ---
@@ -9,7 +9,7 @@
 
 Herkese iyi aksamlar.
 
-Baslamadan once — Veli, Furkan, Murat, ClawCon, OpenClaw, hepinize tesekkurler. Ankara'da olmak cok guzel bu aksam.
+Baslamadan once — Veli, Furkan, Murat, ClawCon, OpenClaw, hepinize tesekkurler. Istanbul'da olmak cok guzel bu aksam.
 
 Ben Mert. context-mode diye bir open-source MCP server yapiyorum. Bu aksam sizinle bir seyden bahsetmek istiyorum. Bir suredir beni rahatsiz eden bir sey var. Sizi de rahatsiz ediyor aslinda, sadece henuz buna bir isim koymamissiniz.
 
@@ -163,7 +163,7 @@ Yuzde 98-99.5 daha az context. Ayni is. Ayni cevaplar. Ama agent duvara carpmada
 
 context-mode. Open source. Hep oyle oldu.
 
-95,000 kullanici. 79,000 npm indirme. 14 platform. 10,000 GitHub yildizi. Microsoft, Google, Meta, ByteDance, GitHub, Stripe, Datadog, NVIDIA, Supabase'deki takimlar kullaniyor.
+125,000 kullanici. 104,000 npm indirme. 14 platform. 12,500 GitHub yildizi. Microsoft, Google, Meta, ByteDance, GitHub, Stripe, Datadog, NVIDIA, Supabase'deki takimlar kullaniyor.
 
 14 adapter — Claude Code, Cursor, Codex, Gemini, Kiro, Cline ve daha fazlasi. Native bir OpenClaw adapter'i da dahil. Bunu burada bu aksam soylemek guzel hissettiriyor.
 
